@@ -718,7 +718,7 @@ export default function App() {
 
       {tab === "finans" && <>
         <TabIntro>{threePhase
-          ? "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån (LTV af grunden, afdragsfrit) → byggekredit (LTC af projektsummen, indfrier grundlånet, trækkes gradvist) → realkredit ved stabilisering (LTV af ejendomsværdien, annuitet). Der er ingen lejeindtægt i fase 1 og 2 — renterne dér er en negativ carry, projektet selv skal bære."
+          ? "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån (LTV af grunden, afdragsfrit) → byggekredit (LTC af projektsummen, indfrier grundlånet, trækkes gradvist) → realkredit ved stabilisering (LTV af ejendomsværdien, annuitet). Ved refinansieringen trækkes hele realkreditkapaciteten: rækker den længere end byggekreditten, udbetales overskuddet til ejerkredsen og frigør bunden kapital — men det koster rente og trækker DSCR ned. Der er ingen lejeindtægt i fase 1 og 2; renterne dér er en negativ carry, projektet selv skal bære."
           : twoPhase
           ? "To-faset finansiering: byggelån (LTC med senior/junior-tranche og blended rente, afdragsfrit i byggeperioden) → realkredit-refinansiering ved stabilisering (LTV af ejendomsværdien, annuitet). Et evt. refi-gap skal dækkes med ekstra egenkapital."
           : "Realkreditlånet, der optages ved færdiggørelse: lånets størrelse (LTV af ejendomsværdien, dog højst byggesummen), rente, bankens nøgletal (DSCR) — og hvad gearingen betyder for afkastet på egenkapitalen."}</TabIntro>
@@ -728,12 +728,18 @@ export default function App() {
           <Fase n="2" titel="Byggeri" aar={"år " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "")} laan={m.loanAmt} laanTxt={P.ltcPct + " % LTC af projektsum — indfrier grundlånet"}
             rows={[["Gns. træk i byggefasen", f(FA.byggeGnsnit)], ["Blended rente " + fP(m.blendedRate), f(FA.ydByg) + "/år"], ["Renter i fasen", f(FA.byggeRenter)]]} />
           <Fase n="3" titel="Stabiliseret drift" aar={"fra år " + FA.stabYear} laan={m.rkLoan} laanTxt={P.rkLtv + " % LTV af værdi " + f(m.iv4)}
-            rows={[["Refi-gap (egenkapital)", f(m.rkRefiGap)], ["Annuitet " + P.rkRate + " % / " + P.amorYrs + " år", f(m.ydRkAnnuitet) + "/år"], ["DSCR i driftsfasen", (m.dscrRk || 0).toFixed(2) + "x"]]}
+            rows={[
+              m.rkCashOut > 0 ? ["Frigjort til ejerkredsen", f(m.rkCashOut)] : ["Refi-gap (egenkapital)", f(m.rkRefiGap)],
+              ["EK bundet efter refi", f(m.eqEfterRefi)],
+              ["Annuitet " + P.rkRate + " % / " + P.amorYrs + " år", f(m.ydRkAnnuitet) + "/år"],
+              ["DSCR i driftsfasen", (m.dscrRk || 0).toFixed(2) + "x"]]}
             advar={m.rkRefiGap > 0 || (m.dscrRk || 0) < 1} />
         </div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 8 }}>
           {threePhase ? <>
-            <Kp label="Samlet gæld ved færdiggørelse" value={f(m.loanAmt)} sub={"byggekredit, " + P.ltcPct + " % LTC"} />
+            {m.rkCashOut > 0
+              ? <Kp label="Frigjort til ejerkredsen" value={f(m.rkCashOut)} sub={"cash-out ved refi i år " + FA.stabYear} color={GR} />
+              : <Kp label="Samlet gæld ved færdiggørelse" value={f(m.loanAmt)} sub={"byggekredit, " + P.ltcPct + " % LTC"} />}
             <Kp label="Renter i fase 1–2" value={f(FA.carryIalt)} sub={"negativ carry over " + FA.stabYear + " år uden leje"} color={OR} />
             <Kp label="DSCR (byggekredit)" value={m.dscr.toFixed(2) + "x"} sub={"kan det færdige hus bære byggelånet?"} color={dscrC} />
             <Kp label="DSCR (realkredit)" value={(m.dscrRk || 0).toFixed(2) + "x"} sub={(m.dscrRk || 0) >= 1.2 ? "OK — bank kræver typisk 1,2x+" : (m.dscrRk || 0) >= 1 ? "Marginal" : "Under 1x — driften bærer ikke lånet"} color={(m.dscrRk || 0) >= 1.2 ? GR : (m.dscrRk || 0) >= 1 ? OR : RD} />
@@ -753,7 +759,9 @@ export default function App() {
           <Kp label="Lev. CAGR (ann.)" value={fP(m.cagrLev)} sub={"Ulev. " + fP(m.cagr)} color={levC} />
           <Kp label="Lev. Equity Multiple" value={m.eqMultLev.toFixed(2) + "x"} sub={"Ulev. " + m.equityMultiple.toFixed(2) + "x"} color={eqMC} />
           <Kp label={threePhase ? "Ydelse, driftsfasen" : twoPhase ? "Ydelse byggefase (IO)" : "Årlig rente (afdragsfrit)"} value={f(threePhase ? m.ydRkAnnuitet : m.ydIO)} sub={fK(Math.round((threePhase ? m.ydRkAnnuitet : m.ydIO) / 12)) + " kr/mdr"} />
-          <Kp label="Egenkapital i alt" value={f(m.equityTotal)} sub={(twoPhase || threePhase) ? (m.rkRefiGap > 0 ? "inkl. refi-gap " + f(m.rkRefiGap) : "inkl. stiftelsesomk.") : purchase ? "kontant indskud + stiftelse" : "grunden indskydes som apport"} />
+          <Kp label={threePhase && m.rkCashOut > 0 ? "Egenkapital — top / bundet" : "Egenkapital i alt"}
+            value={threePhase && m.rkCashOut > 0 ? f(m.eqBrutto) + " → " + f(m.eqEfterRefi) : f(m.equityTotal)}
+            sub={threePhase && m.rkCashOut > 0 ? "toppen skal stilles; resten er bundet efter refi" : (twoPhase || threePhase) ? (m.rkRefiGap > 0 ? "inkl. refi-gap " + f(m.rkRefiGap) : "inkl. stiftelsesomk.") : purchase ? "kontant indskud + stiftelse" : "grunden indskydes som apport"} />
         </div>
 
         <Sec title="Finansieringsparametre" sub={threePhase ? "Fase 1 sætter grundkøbslånet, fase 2 byggekreditten (senior op til 65 % — resten dyrere junior), fase 3 realkreditten. Fasernes længde styrer, hvor længe projektet bærer renter uden lejeindtægt." : twoPhase ? "Byggelån efter LTC; senior-tranche op til 65% — resten er dyrere junior. Refinansieres til realkredit efter IO-perioden." : "LTV af ejendomsværdien (NOI / cap rate), dog højst byggesummen. Afdragsfrit — indfries ved salg; i driftscasen bliver lånet stående"}>
@@ -786,10 +794,13 @@ export default function App() {
             <Hd text={"FASE 3 — STABILISERET DRIFT MED REALKREDIT (FRA ÅR " + FA.stabYear + ")"} />
             <DR label={"Max realkredit (" + P.rkLtv + "% af værdi " + f(m.iv4) + ")"} value={f(m.rkMaxLoan)} />
             <DR label="Realkreditlån ved refinansiering" value={f(m.rkLoan)} bg={LT} />
-            <DR label="Refi-gap (dækkes af egenkapital)" value={f(m.rkRefiGap)} bold={m.rkRefiGap > 0} color={m.rkRefiGap > 0 ? OR : undefined} />
-            <DR label={"Årlig ydelse, annuitet (" + P.rkRate + "% · " + P.amorYrs + " år)"} value={f(m.ydRkAnnuitet)} bg={LT} />
-            <DR label={"Driftsår før exit (år " + FA.stabYear + "–" + FA.exitYear + ")"} value={FA.driftAar + " år"} />
-            <DR label="Egenkapital i alt (indskud + stiftelse + refi-gap)" value={f(m.equityTotal)} bold bg={LT} />
+            <DR label="Indfrier byggekreditten" value={"−" + f(m.loanAmt)} />
+            {m.rkRefiGap > 0 && <DR label="Refi-gap (dækkes af egenkapital)" value={f(m.rkRefiGap)} bold color={OR} bg={LT} />}
+            {m.rkCashOut > 0 && <DR label="Frigjort til ejerkredsen (cash-out)" value={f(m.rkCashOut)} bold color={GR} bg={LT} />}
+            <DR label={"Årlig ydelse, annuitet (" + P.rkRate + "% · " + P.amorYrs + " år)"} value={f(m.ydRkAnnuitet)} />
+            <DR label={"Driftsår før exit (år " + FA.stabYear + "–" + FA.exitYear + ")"} value={FA.driftAar + " år"} bg={LT} />
+            <DR label="Egenkapital på toppen (indskud + stiftelse + evt. refi-gap)" value={f(m.eqBrutto)} bold />
+            {m.rkCashOut > 0 && <DR label={"Bundet egenkapital efter refi (år " + FA.stabYear + " og frem)"} value={f(m.eqEfterRefi)} bold bg={LT} color={GR} />}
           </> : twoPhase ? <>
             <DR label={"Byggelån (" + P.ltcPct + "% LTC)"} value={f(m.loanAmt)} />
             <DR label={"   Senior-tranche (op til 65% · " + P.seniorRate + "%)"} value={f(m.seniorAmt)} bg={LT} />
