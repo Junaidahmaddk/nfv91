@@ -1,0 +1,61 @@
+name: Deploy til GitHub Pages
+
+# Pages SKAL være aktiveret på repoet, før dette workflow kan deploye.
+# Workflowet kan ikke selv gøre det: POST /repos/{owner}/{repo}/pages kræver
+# BÅDE "Pages" (write) OG "Administration" (write), og `administration` findes
+# ikke som nøgle i permissions-blokken nedenfor. Derfor kan det indbyggede
+# GITHUB_TOKEN aldrig oprette sitet — actions/configure-pages' `enablement`
+# kræver eksplicit "a token other than GITHUB_TOKEN".
+#
+# Aktivering sker derfor ét sted uden for workflowet:
+#   manuelt  → Settings → Pages → Build and deployment → Source: GitHub Actions
+#   automatisk → generatoren kalder POST /repos/{o}/{r}/pages {"build_type":"workflow"}
+#                med GITHUB_CASE_PAT (Administration:write + Pages:write)
+#
+# Lad Settings → Pages → Custom domain stå TOMT. Domænet cases.fairhomes.io er
+# claimet af user-sitet og arves automatisk til /<repo-navn>/; skrives det ind
+# her, afvises det som "custom domain being taken".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Installer, test og byg
+        run: |
+          npm ci
+          npm test
+          npm run build
+      - name: Konfigurer Pages
+        uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

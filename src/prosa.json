@@ -1,0 +1,54 @@
+{
+  "memo": {
+    "titel": "Investment memo",
+    "afsnit": [
+      { "tekst": "[PLADSHOLDER] Kort fortalt: Ejendommen på Gammel Køge Landevej 214 i Valby erhverves, de eksisterende bygninger rives ned, og der opføres nye etageboliger til udlejning til fri markedsleje. Exit sker ved stykvis salg, samlet salg eller fortsat drift. Dette afsnit skrives konkret til casen, når spec og research er på plads.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] Sådan tjener projektet penge: 1) løbende husleje efter driftsomkostninger (NOI), 2) salgsprovenu ved exit. Alle tal på denne side opdateres live med forudsætningerne på de øvrige faner.", "udkast": true }
+    ]
+  },
+  "marked": {
+    "titel": "Marked & referencer",
+    "afsnit": [
+      { "tekst": "[PLADSHOLDER] Markedsafsnittet udfyldes med researched leje-, salgs- og cap rate-niveauer for mikroområdet samt referenceprojekter og kilder — se LGV2628's Marked-fane som forbillede.", "udkast": true }
+    ]
+  },
+  "forbehold": {
+    "titel": "Forbehold",
+    "afsnit": [
+      { "tekst": "[PLADSHOLDER] Planrisiko: Projektet forudsætter plangrundlag (lokalplan/byggetilladelse), som ikke er verificeret. Bebyggelsesprocent og etageareal er antagelser.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] Grunddata: Grundareal, servitutter og tingbog er ikke gennemgået. Miljøforhold (forurening, asbest) er ikke undersøgt.", "udkast": true },
+      { "tekst": "Alle beregninger er vejledende, før skat, og udgør ikke investeringsrådgivning. Renteniveauer er vejledende — indhent konkrete finansieringstilbud.", "udkast": false }
+    ]
+  },
+  "risici": {
+    "titel": "Væsentligste risici — i klart sprog",
+    "afsnit": [
+      { "tekst": "[PLADSHOLDER] Kommunen: Kræver projektet nyt plangrundlag, er det typisk den største enkeltrisiko — beskriv konkret status for casen her.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] Byggepriser: Bliver byggeriet dyrere end forudsat, spiser det af gevinsten. Se Følsomhed-fanen for effekten.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] Renter og salgspriser: Højere rente gør lånet dyrere, og lavere boligpriser giver mindre ved salg.", "udkast": true }
+    ]
+  },
+  "tidslinje": {
+    "titel": "Sådan forløber projektet",
+    "afsnit": [
+      { "tekst": "[PLADSHOLDER] 1. Tilladelser og plangrundlag — ca. X mdr.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] 2. Nedrivning og opførelse — ca. X mdr.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] 3. Udlejning — fra færdiggørelse.", "udkast": true },
+      { "tekst": "[PLADSHOLDER] 4. Exit — stykvis salg, samlet salg eller fortsat drift.", "udkast": true }
+    ]
+  },
+  "ordforklaring": {
+    "titel": "Ordforklaring",
+    "afsnit": [
+      { "tekst": "NOI (driftsoverskud) — huslejen minus alle driftsudgifter; det årlige overskud ved at eje og udleje boligerne.", "udkast": false },
+      { "tekst": "Årligt afkast (CAGR) — det gennemsnitlige afkast pr. år over hele perioden, beregnet som (1 + samlet afkast)^(1/år) − 1. Bemærk: metrikken tager ikke højde for cashflow-timing og er derfor ikke en egentlig IRR.", "udkast": false },
+      { "tekst": "Equity multiple — hvor mange gange kapitalen kommer tilbage. 1,50x betyder, at 1 krone bliver til 1,50 kroner i alt.", "udkast": false },
+      { "tekst": "Cap rate — det afkastkrav, en investor stiller til en udlejningsejendom. Værdi = årligt driftsoverskud divideret med cap rate.", "udkast": false },
+      { "tekst": "Yield on cost — det årlige driftsoverskud målt i forhold til den samlede kapitalindsats.", "udkast": false },
+      { "tekst": "DSCR — hvor mange gange driftsoverskuddet kan betale lånets ydelse. Over 1,2x anses normalt for solidt.", "udkast": false },
+      { "tekst": "LTV / LTC — lånets størrelse i forhold til hhv. ejendommens værdi og projektets samlede omkostninger.", "udkast": false },
+      { "tekst": "Tomgang — perioder hvor en bolig står tom uden lejeindtægt, indregnet som en procent af lejen.", "udkast": false },
+      { "tekst": "Stykvis salg — at sælge udlejningsboligerne ét ad gangen som ejerboliger (privatisering), typisk når en lejer flytter.", "udkast": false }
+    ]
+  }
+}
