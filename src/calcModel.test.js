@@ -599,3 +599,145 @@ describe("(c) kontakt-dækning", () => {
     expect(mLavt.fees.carry).toBe(0);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// (d) threePhase — grundkøbslån → byggekredit → realkredit
+//
+// Ingen golden-kilde: moden findes ikke i LGV2628 eller NFV111, så testene
+// verificerer modellens egne invarianter i stedet for at reproducere et facit.
+// ─────────────────────────────────────────────────────────────────────────────
+const SPEC3 = {
+  model: { landMode: "purchase", opexMode: "itemised", debtMode: "threePhase", exitModes: ["sqm", "cap", "hold"], feeMode: "devAndFin", advokatDD: 150000 },
+  defaults: {
+    grundAreal: 788, pp: 25000000, csqm: 25000, demo: 1900000, bpPct: 10, rdPct: 12,
+    tilsl: 900000, ufPct: 10, gebyr: 150000, bebygPct: 240, units: 22, rent: 2100,
+    grundskyld: 189100, forsikring: 104005, admPct: 3, vedlSqm: 50, divSqm: 80,
+    tomgang: 2, lejeStig: 2, tyrs: 5, spSqm: 98500, maeglerPct: 1, capRate: 3.75,
+    exitMode: "sqm", grundLtv: 60, grundRate: 6, grundYrs: 1, byggeYrs: 2,
+    ltcPct: 65, seniorRate: 4, juniorRate: 8, rkLtv: 70, rkRate: 4.5, amorYrs: 30,
+    bankFee: 2, devPctYr: 2, finFeePct: 1.5, projMdr: 36
+  }
+};
+const m3 = (over) => calcModel(Object.assign({}, SPEC3.defaults, over || {}), SPEC3);
+
+describe("(d) threePhase — faseopdelt finansiering", () => {
+  it("fase 1: grundkøbslånet er LTV af grundkøbet, resten er egenkapital", () => {
+    const m = m3();
+    expect(m.faser.grundLaan).toBeCloseTo(m.land * 0.60, 2);
+    expect(m.faser.grundEgen).toBeCloseTo(m.land - m.faser.grundLaan, 2);
+    expect(m.faser.ydGrund).toBeCloseTo(m.faser.grundLaan * 0.06, 2);
+    expect(m.faser.grundRenter).toBeCloseTo(m.faser.ydGrund * 1, 2); // grundYrs = 1
+  });
+
+  it("fase 2: byggekreditten er LTC af projektsummen med senior/junior-split", () => {
+    const m = m3();
+    expect(m.loanAmt).toBeCloseTo(m.pI * 0.65, 2);
+    expect(m.seniorAmt).toBeCloseTo(m.pI * 0.65, 2); // ltcPct = 65 → ingen junior
+    expect(m.juniorAmt).toBe(0);
+    expect(m.blendedRate).toBeCloseTo(0.04, 6);
+    // gennemsnitligt træk ligger midt mellem grundlånet og fuld byggekredit
+    expect(m.faser.byggeGnsnit).toBeCloseTo((m.faser.grundLaan + m.loanAmt) / 2, 2);
+    expect(m.faser.byggeRenter).toBeCloseTo(m.faser.byggeGnsnit * m.blendedRate * 2, 2);
+  });
+
+  it("junior-tranchen tændes først over 65 % LTC og hæver den blendede rente", () => {
+    const m = m3({ ltcPct: 75 });
+    expect(m.seniorAmt).toBeCloseTo(m.pI * 0.65, 2);
+    expect(m.juniorAmt).toBeCloseTo(m.pI * 0.10, 2);
+    expect(m.blendedRate).toBeGreaterThan(0.04);
+    expect(m.blendedRate).toBeLessThan(0.08);
+  });
+
+  it("fase 3: realkredit er LTV af ejendomsværdien, og overskuddet bliver refi-gap", () => {
+    const m = m3();
+    expect(m.rkMaxLoan).toBeCloseTo(m.iv4 * 0.70, 2);
+    expect(m.rkLoan).toBeCloseTo(Math.min(m.loanAmt, m.rkMaxLoan), 2);
+    expect(m.rkRefiGap).toBeCloseTo(Math.max(0, m.loanAmt - m.rkMaxLoan), 2);
+    expect(m.equityTotal).toBeCloseTo(m.pI - m.loanAmt + m.bankFeeKr + m.rkRefiGap, 2);
+  });
+
+  it("fase 1 og 2 har ingen lejeindtægt — kun renter", () => {
+    const m = m3();
+    const stab = m.faser.stabYear;
+    expect(stab).toBe(3); // grundYrs 1 + byggeYrs 2
+    for (let y = 0; y < stab; y++) {
+      expect(m.cfLev[y].noi).toBe(0);
+      expect(m.cfLev[y].salg).toBe(0);
+      expect(m.cfLev[y].ds).toBeGreaterThan(0);
+    }
+    expect(m.cfLev[stab].noi).toBeGreaterThan(0);
+    expect(m.cfLev[stab].phase).toBe("RK");
+  });
+
+  it("faserne mærkes GRUND → BYG → RK i den rækkefølge", () => {
+    const m = m3({ grundYrs: 2, byggeYrs: 3 });
+    expect(m.cfLev.slice(0, 6).map((r) => r.phase)).toEqual(["GRUND", "GRUND", "BYG", "BYG", "BYG", "RK"]);
+    expect(m.faser.stabYear).toBe(5);
+  });
+
+  it("carry i fase 1-2 er summen af de to fasers renter og trækker på afkastet", () => {
+    const m = m3();
+    expect(m.faser.carryIalt).toBeCloseTo(m.faser.grundRenter + m.faser.byggeRenter, 2);
+    // en længere byggeperiode koster carry og sænker afkastet
+    const lang = m3({ byggeYrs: 4 });
+    expect(lang.faser.carryIalt).toBeGreaterThan(m.faser.carryIalt);
+    expect(lang.cagrLev).toBeLessThan(m.cagrLev);
+  });
+
+  it("exit kan ikke ligge før stabilisering — horisonten skubbes", () => {
+    const m = m3({ tyrs: 2, grundYrs: 1, byggeYrs: 2 }); // tyrs < stabYear
+    expect(m.faser.exitYear).toBe(3);
+    expect(m.faser.driftAar).toBe(1);
+    // alle boliger sælges i det ene driftsår
+    expect(m.cfLev[3].remain).toBe(0);
+  });
+
+  it("alle boliger sælges senest i exit-året, og lånet er indfriet", () => {
+    const m = m3();
+    expect(m.cfLev[m.faser.exitYear].remain).toBe(0);
+    expect(m.loanBalExit).toBeCloseTo(0, 0);
+  });
+
+  it("driftsårene deler salget mellem sig", () => {
+    const m = m3({ tyrs: 6 }); // stab år 3 → driftsår 3,4,5,6 = 4 år
+    expect(m.faser.driftAar).toBe(4);
+    expect(m.cfLev[6].remain).toBe(0);
+    expect(m.cfLev[3].remain).toBeLessThan(22); // salget starter ved stabilisering
+    expect(m.cfLev[2].remain).toBe(22);         // intet solgt i byggefasen
+  });
+
+  it("DSCR opgøres på begge gældstyper mod det stabiliserede driftsresultat", () => {
+    const m = m3();
+    expect(m.dscr).toBeCloseTo(m.noi / m.ydIO, 6);
+    expect(m.dscrRk).toBeCloseTo(m.noi / m.ydRkAnnuitet, 6);
+  });
+
+  it("totalafkastet er kumuleret drift + salg minus egenkapital", () => {
+    const m = m3();
+    expect(m.totalRetLev).toBeCloseTo(m.levCumNoiExit + m.levSalgNet - m.equityTotal, 2);
+    expect(m.eqMultLev).toBeGreaterThan(0);
+  });
+
+  it("cap- og hold-exit virker også i threePhase", () => {
+    for (const mode of ["cap", "hold"]) {
+      const m = m3({ exitMode: mode });
+      expect(m.faser.stabYear).toBe(3);
+      expect(Number.isFinite(m.totalRetLev)).toBe(true);
+      expect(Number.isFinite(m.cagrLev)).toBe(true);
+    }
+    expect(m3({ exitMode: "hold" }).cfLev[5].remain).toBe(22); // hold sælger ikke
+  });
+
+  it("grundYrs = 0 springer fase 1 over uden at knække modellen", () => {
+    const m = m3({ grundYrs: 0 });
+    expect(m.faser.grundRenter).toBe(0);
+    expect(m.faser.stabYear).toBe(2);
+    expect(m.cfLev[0].phase).toBe("BYG");
+  });
+
+  it("de øvrige modes er upåvirkede af den nye gren", () => {
+    const two = calcModel({}, Object.assign({}, SPEC3, { model: Object.assign({}, SPEC3.model, { debtMode: "twoPhase" }) }));
+    expect(two.faser).toBe(null);
+    expect(two.cfLev[0].noi).toBeGreaterThan(0); // twoPhase har leje fra år 0
+  });
+});

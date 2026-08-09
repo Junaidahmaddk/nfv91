@@ -93,6 +93,27 @@ function ProsaSec({ sektion, sub }) {
   );
 }
 
+// ét fase-kort på finansieringsfanen: hvilken gæld bærer projektet hvornår
+function Fase({ n, titel, aar, laan, laanTxt, rows, advar }) {
+  return (
+    <div style={{ background: CD, borderRadius: 8, overflow: "hidden", border: "1px solid " + (advar ? "rgba(245,158,11,0.45)" : CB) }}>
+      <div style={{ background: advar ? "rgba(245,158,11,0.15)" : "rgba(232,220,196,0.12)", padding: "7px 12px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <span style={{ fontSize: 11.5, fontWeight: 700, color: BL }}>FASE {n} · {titel}</span>
+        <span style={{ fontSize: 10, color: GY }}>{aar}</span>
+      </div>
+      <div style={{ padding: "10px 12px 4px" }}>
+        <div style={{ fontSize: 21, fontWeight: 700, color: BL, fontVariantNumeric: "tabular-nums" }}>{f(laan)}</div>
+        <div style={{ fontSize: 10, color: GY, marginBottom: 8 }}>{laanTxt}</div>
+      </div>
+      {rows.map(function(r, i) {
+        return <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 12px", fontSize: 11, color: BL, background: i % 2 ? LT : "transparent" }}>
+          <span style={{ color: GY }}>{r[0]}</span><span style={{ fontVariantNumeric: "tabular-nums" }}>{r[1]}</span>
+        </div>;
+      })}
+    </div>
+  );
+}
+
 // myndighedsscenarier: samme case regnet igennem ved forskellige udfald af
 // plangrundlaget. Rene regneeksempler — spec.myndighedsscenarier, ikke rammer.
 function Myndighed({ P, m }) {
@@ -249,6 +270,8 @@ export default function App() {
   var holdMode = m.exitMode === "hold";
   var purchase = m.landMode === "purchase";
   var twoPhase = m.debtMode === "twoPhase";
+  var threePhase = m.debtMode === "threePhase";
+  var FA = m.faser || {};
   var itemised = m.opexMode === "itemised";
   var units = P.units, tyrs = P.tyrs;
   var AREA = m.AREA, AU = m.AU;
@@ -694,11 +717,27 @@ export default function App() {
       </>}
 
       {tab === "finans" && <>
-        <TabIntro>{twoPhase
+        <TabIntro>{threePhase
+          ? "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån (LTV af grunden, afdragsfrit) → byggekredit (LTC af projektsummen, indfrier grundlånet, trækkes gradvist) → realkredit ved stabilisering (LTV af ejendomsværdien, annuitet). Der er ingen lejeindtægt i fase 1 og 2 — renterne dér er en negativ carry, projektet selv skal bære."
+          : twoPhase
           ? "To-faset finansiering: byggelån (LTC med senior/junior-tranche og blended rente, afdragsfrit i byggeperioden) → realkredit-refinansiering ved stabilisering (LTV af ejendomsværdien, annuitet). Et evt. refi-gap skal dækkes med ekstra egenkapital."
           : "Realkreditlånet, der optages ved færdiggørelse: lånets størrelse (LTV af ejendomsværdien, dog højst byggesummen), rente, bankens nøgletal (DSCR) — og hvad gearingen betyder for afkastet på egenkapitalen."}</TabIntro>
+        {threePhase && <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 8 }}>
+          <Fase n="1" titel="Grundkøb" aar={"år 0" + (FA.gYrs > 1 ? "–" + (FA.gYrs - 1) : "")} laan={FA.grundLaan} laanTxt={P.grundLtv + " % LTV af grundkøb " + f(m.land)}
+            rows={[["Egenkapital ved købet", f(FA.grundEgen)], ["Rente " + P.grundRate + " % (afdragsfrit)", f(FA.ydGrund) + "/år"], ["Renter i fasen", f(FA.grundRenter)]]} />
+          <Fase n="2" titel="Byggeri" aar={"år " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "")} laan={m.loanAmt} laanTxt={P.ltcPct + " % LTC af projektsum — indfrier grundlånet"}
+            rows={[["Gns. træk i byggefasen", f(FA.byggeGnsnit)], ["Blended rente " + fP(m.blendedRate), f(FA.ydByg) + "/år"], ["Renter i fasen", f(FA.byggeRenter)]]} />
+          <Fase n="3" titel="Stabiliseret drift" aar={"fra år " + FA.stabYear} laan={m.rkLoan} laanTxt={P.rkLtv + " % LTV af værdi " + f(m.iv4)}
+            rows={[["Refi-gap (egenkapital)", f(m.rkRefiGap)], ["Annuitet " + P.rkRate + " % / " + P.amorYrs + " år", f(m.ydRkAnnuitet) + "/år"], ["DSCR i driftsfasen", (m.dscrRk || 0).toFixed(2) + "x"]]}
+            advar={m.rkRefiGap > 0 || (m.dscrRk || 0) < 1} />
+        </div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 8 }}>
-          {twoPhase ? <>
+          {threePhase ? <>
+            <Kp label="Samlet gæld ved færdiggørelse" value={f(m.loanAmt)} sub={"byggekredit, " + P.ltcPct + " % LTC"} />
+            <Kp label="Renter i fase 1–2" value={f(FA.carryIalt)} sub={"negativ carry over " + FA.stabYear + " år uden leje"} color={OR} />
+            <Kp label="DSCR (byggekredit)" value={m.dscr.toFixed(2) + "x"} sub={"kan det færdige hus bære byggelånet?"} color={dscrC} />
+            <Kp label="DSCR (realkredit)" value={(m.dscrRk || 0).toFixed(2) + "x"} sub={(m.dscrRk || 0) >= 1.2 ? "OK — bank kræver typisk 1,2x+" : (m.dscrRk || 0) >= 1 ? "Marginal" : "Under 1x — driften bærer ikke lånet"} color={(m.dscrRk || 0) >= 1.2 ? GR : (m.dscrRk || 0) >= 1 ? OR : RD} />
+          </> : twoPhase ? <>
             <Kp label="Byggelån (LTC)" value={f(m.loanAmt)} sub={P.ltcPct + "% af projektsum " + f(m.pI)} />
             <Kp label="Blended rente" value={fP(m.blendedRate)} sub={"senior " + P.seniorRate + "% / junior " + P.juniorRate + "%"} />
             <Kp label="DSCR (byggefase, IO)" value={m.dscr.toFixed(2) + "x"} sub={m.dscr >= 1.3 ? "OK — bank kræver typisk 1,2x+" : m.dscr >= 1.0 ? "Marginal" : "Under 1x"} color={dscrC} />
@@ -713,11 +752,11 @@ export default function App() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
           <Kp label="Lev. CAGR (ann.)" value={fP(m.cagrLev)} sub={"Ulev. " + fP(m.cagr)} color={levC} />
           <Kp label="Lev. Equity Multiple" value={m.eqMultLev.toFixed(2) + "x"} sub={"Ulev. " + m.equityMultiple.toFixed(2) + "x"} color={eqMC} />
-          <Kp label={twoPhase ? "Ydelse byggefase (IO)" : "Årlig rente (afdragsfrit)"} value={f(m.ydIO)} sub={fK(Math.round(m.ydIO / 12)) + " kr/mdr"} />
-          <Kp label="Egenkapital i alt" value={f(m.equityTotal)} sub={twoPhase ? (m.rkRefiGap > 0 ? "inkl. refi-gap " + f(m.rkRefiGap) : "inkl. stiftelsesomk.") : purchase ? "kontant indskud + stiftelse" : "grunden indskydes som apport"} />
+          <Kp label={threePhase ? "Ydelse, driftsfasen" : twoPhase ? "Ydelse byggefase (IO)" : "Årlig rente (afdragsfrit)"} value={f(threePhase ? m.ydRkAnnuitet : m.ydIO)} sub={fK(Math.round((threePhase ? m.ydRkAnnuitet : m.ydIO) / 12)) + " kr/mdr"} />
+          <Kp label="Egenkapital i alt" value={f(m.equityTotal)} sub={(twoPhase || threePhase) ? (m.rkRefiGap > 0 ? "inkl. refi-gap " + f(m.rkRefiGap) : "inkl. stiftelsesomk.") : purchase ? "kontant indskud + stiftelse" : "grunden indskydes som apport"} />
         </div>
 
-        <Sec title="Finansieringsparametre" sub={twoPhase ? "Byggelån efter LTC; senior-tranche op til 65% — resten er dyrere junior. Refinansieres til realkredit efter IO-perioden." : "LTV af ejendomsværdien (NOI / cap rate), dog højst byggesummen. Afdragsfrit — indfries ved salg; i driftscasen bliver lånet stående"}>
+        <Sec title="Finansieringsparametre" sub={threePhase ? "Fase 1 sætter grundkøbslånet, fase 2 byggekreditten (senior op til 65 % — resten dyrere junior), fase 3 realkreditten. Fasernes længde styrer, hvor længe projektet bærer renter uden lejeindtægt." : twoPhase ? "Byggelån efter LTC; senior-tranche op til 65% — resten er dyrere junior. Refinansieres til realkredit efter IO-perioden." : "LTV af ejendomsværdien (NOI / cap rate), dog højst byggesummen. Afdragsfrit — indfries ved salg; i driftscasen bliver lånet stående"}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0 16px" }}>
             {renderSliders(slGruppe("finans"))}
           </div>
@@ -727,7 +766,31 @@ export default function App() {
           <Hd text="LÅNEBEREGNING" />
           <DR label="Samlet kapitalindsats" value={f(m.totalCapital)} />
           <DR label="Byggesum inkl. moms (kontant behov)" value={f(m.cIn)} bg={LT} />
-          {twoPhase ? <>
+          {threePhase ? <>
+            <Hd text={"FASE 1 — GRUNDKØBSFINANSIERING (ÅR 0" + (FA.gYrs > 1 ? "–" + (FA.gYrs - 1) : "") + ")"} />
+            <DR label={"Grundkøb inkl. tinglysning og advokat/DD"} value={f(m.land)} />
+            <DR label={"Grundkøbslån (" + P.grundLtv + "% LTV)"} value={f(FA.grundLaan)} bg={LT} />
+            <DR label="Egenkapital ved købet" value={f(FA.grundEgen)} />
+            <DR label={"Rente (" + P.grundRate + "%, afdragsfrit)"} value={f(FA.ydGrund) + "/år"} bg={LT} />
+            <DR label={"Renter i fase 1 (" + FA.gYrs + " år uden leje)"} value={f(FA.grundRenter)} color={OR} />
+            <Hd text={"FASE 2 — BYGGEFINANSIERING (ÅR " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "") + ")"} />
+            <DR label={"Byggekredit (" + P.ltcPct + "% LTC af projektsum)"} value={f(m.loanAmt)} bg={LT} />
+            <DR label={"   Senior-tranche (op til 65% · " + P.seniorRate + "%)"} value={f(m.seniorAmt)} />
+            {m.juniorAmt > 0 && <DR label={"   Junior-tranche (" + P.juniorRate + "%)"} value={f(m.juniorAmt)} bg={LT} />}
+            <DR label="   Blended rente" value={fP(m.blendedRate)} bg={m.juniorAmt > 0 ? undefined : LT} />
+            <DR label="Indfrier grundkøbslånet ved byggestart" value={"−" + f(FA.grundLaan)} />
+            <DR label="Gns. træk over byggeperioden" value={f(FA.byggeGnsnit)} bg={LT} />
+            <DR label={"Renter i fase 2 (" + FA.byggeYrs + " år uden leje)"} value={f(FA.byggeRenter)} color={OR} />
+            <DR label="Stiftelsesomk. på begge lån" value={f(m.bankFeeKr)} bg={LT} />
+            <TotR left={"Renter i alt, fase 1–2 (negativ carry)"} right={f(FA.carryIalt)} bg={OR} />
+            <Hd text={"FASE 3 — STABILISERET DRIFT MED REALKREDIT (FRA ÅR " + FA.stabYear + ")"} />
+            <DR label={"Max realkredit (" + P.rkLtv + "% af værdi " + f(m.iv4) + ")"} value={f(m.rkMaxLoan)} />
+            <DR label="Realkreditlån ved refinansiering" value={f(m.rkLoan)} bg={LT} />
+            <DR label="Refi-gap (dækkes af egenkapital)" value={f(m.rkRefiGap)} bold={m.rkRefiGap > 0} color={m.rkRefiGap > 0 ? OR : undefined} />
+            <DR label={"Årlig ydelse, annuitet (" + P.rkRate + "% · " + P.amorYrs + " år)"} value={f(m.ydRkAnnuitet)} bg={LT} />
+            <DR label={"Driftsår før exit (år " + FA.stabYear + "–" + FA.exitYear + ")"} value={FA.driftAar + " år"} />
+            <DR label="Egenkapital i alt (indskud + stiftelse + refi-gap)" value={f(m.equityTotal)} bold bg={LT} />
+          </> : twoPhase ? <>
             <DR label={"Byggelån (" + P.ltcPct + "% LTC)"} value={f(m.loanAmt)} />
             <DR label={"   Senior-tranche (op til 65% · " + P.seniorRate + "%)"} value={f(m.seniorAmt)} bg={LT} />
             {m.juniorAmt > 0 && <DR label={"   Junior-tranche (" + P.juniorRate + "%)"} value={f(m.juniorAmt)} />}
@@ -752,15 +815,15 @@ export default function App() {
             {holdMode && <DR label={"Restgæld ved horisont (år " + tyrs + ")"} value={f(m.loanBalExit)} bg={LT} />}
           </>}
           <Hd text="NØGLETAL" />
-          <DR label={twoPhase ? "DSCR byggefase (NOI / IO-ydelse)" : "DSCR (NOI / ydelse IO)"} value={m.dscr.toFixed(2) + "x"} bg={LT} />
-          {twoPhase && <DR label="DSCR realkredit (NOI / annuitet)" value={(m.dscrRk || 0).toFixed(2) + "x"} />}
+          <DR label={threePhase ? "DSCR byggekredit (stabil. NOI / IO-ydelse)" : twoPhase ? "DSCR byggefase (NOI / IO-ydelse)" : "DSCR (NOI / ydelse IO)"} value={m.dscr.toFixed(2) + "x"} bg={LT} />
+          {(twoPhase || threePhase) && <DR label="DSCR realkredit (NOI / annuitet)" value={(m.dscrRk || 0).toFixed(2) + "x"} color={threePhase && (m.dscrRk || 0) < 1 ? RD : undefined} bold={threePhase && (m.dscrRk || 0) < 1} />}
           <DR label="Cash-on-Cash (NOI - rente) / EK" value={fP(m.cocReturn)} bg={twoPhase ? LT : undefined} />
           <DR label="NOI efter rente" value={f(m.noi - m.ydIO) + "/år"} bg={twoPhase ? undefined : LT} />
           <TotR left="Leveraged CAGR" right={fP(m.cagrLev)} bg={m.cagrLev > 0 ? GR : RD} />
         </Crd>
 
         <div style={{ height: 20 }} />
-        <Sec title="Leveraged cashflow" sub={twoPhase ? "IO-fase på byggelån → refi til realkredit (markeret RK) → salg/indfrielse" : holdMode ? "Driftscase: driftsresultat efter renter — lånet bliver stående, og friværdien opbygges" : "Driftsresultat efter renter + salgsprovenu efter låneindfrielse"}>
+        <Sec title="Leveraged cashflow" sub={threePhase ? "Fase 1-2 (GRUND/BYG) har ingen lejeindtægt — kun renter. Drift og salg starter i år " + FA.stabYear + " (RK)." : twoPhase ? "IO-fase på byggelån → refi til realkredit (markeret RK) → salg/indfrielse" : holdMode ? "Driftscase: driftsresultat efter renter — lånet bliver stående, og friværdien opbygges" : "Driftsresultat efter renter + salgsprovenu efter låneindfrielse"}>
           <ResponsiveContainer width="100%" height={300}>
             <ComposedChart data={m.cfLev.slice(0, tyrs + 1)} margin={{ top: 10, right: 50, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID} />

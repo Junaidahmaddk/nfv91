@@ -12,7 +12,7 @@
   "model": {
     "landMode": "purchase",
     "opexMode": "itemised",
-    "debtMode": "twoPhase",
+    "debtMode": "threePhase",
     "exitModes": [
       "sqm",
       "cap",
@@ -51,12 +51,15 @@
     "ltcPct": 65,
     "seniorRate": 4.0,
     "juniorRate": 8.0,
-    "ioPeriod": 3,
     "rkLtv": 70,
     "rkRate": 4.5,
     "amorYrs": 30,
     "devPctYr": 2.0,
-    "finFeePct": 1.5
+    "finFeePct": 1.5,
+    "grundLtv": 60,
+    "grundRate": 6.0,
+    "grundYrs": 1,
+    "byggeYrs": 2
   },
   "sliders": [
     {
@@ -222,6 +225,42 @@
       "gruppe": "drift"
     },
     {
+      "id": "grundLtv",
+      "label": "Grundkøbslån (LTV af grunden)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "grundRate",
+      "label": "Rente, grundkøbslån",
+      "min": 2,
+      "max": 12,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "grundYrs",
+      "label": "Fase 1: køb → byggestart",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "år",
+      "gruppe": "finans"
+    },
+    {
+      "id": "byggeYrs",
+      "label": "Fase 2: byggeperiode",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "år",
+      "gruppe": "finans"
+    },
+    {
       "id": "ltcPct",
       "label": "Byggelån (LTC af projektsum)",
       "min": 0,
@@ -246,15 +285,6 @@
       "max": 14,
       "step": 0.5,
       "unit": "%",
-      "gruppe": "finans"
-    },
-    {
-      "id": "ioPeriod",
-      "label": "Afdragsfri byggefase",
-      "min": 0,
-      "max": 6,
-      "step": 1,
-      "unit": "år",
       "gruppe": "finans"
     },
     {
@@ -527,6 +557,31 @@
         5,
         5.5,
         6
+      ]
+    },
+    {
+      "id": "byggeYrs",
+      "label": "Byggeperiode (år)",
+      "fmt": "raw",
+      "values": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "grundRate",
+      "label": "Rente grundkøbslån (%)",
+      "fmt": "pctRaw",
+      "values": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
       ]
     }
   ],
