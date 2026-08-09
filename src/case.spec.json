@@ -11,14 +11,14 @@
   "adgangskode": null,
   "model": {
     "landMode": "purchase",
-    "opexMode": "perSqm",
-    "debtMode": "singleIO",
+    "opexMode": "itemised",
+    "debtMode": "twoPhase",
     "exitModes": [
       "sqm",
       "cap",
       "hold"
     ],
-    "feeMode": "mgmtPrefCarry",
+    "feeMode": "devAndFin",
     "advokatDD": 150000
   },
   "defaults": {
@@ -34,7 +34,6 @@
     "bebygPct": 240,
     "units": 22,
     "rent": 2100,
-    "driftSqm": 425,
     "tomgang": 2,
     "lejeStig": 2,
     "tyrs": 5,
@@ -42,13 +41,22 @@
     "maeglerPct": 1,
     "capRate": 3.75,
     "exitMode": "sqm",
-    "realLtv": 75,
-    "realRente": 4.5,
-    "bankFee": 1,
-    "mgmtPct": 4,
-    "prefPct": 25,
-    "carryPct": 20,
-    "projMdr": 36
+    "bankFee": 2.0,
+    "projMdr": 36,
+    "grundskyld": 189100,
+    "forsikring": 104005,
+    "admPct": 3,
+    "vedlSqm": 50,
+    "divSqm": 80,
+    "ltcPct": 65,
+    "seniorRate": 4.0,
+    "juniorRate": 8.0,
+    "ioPeriod": 3,
+    "rkLtv": 70,
+    "rkRate": 4.5,
+    "amorYrs": 30,
+    "devPctYr": 2.0,
+    "finFeePct": 1.5
   },
   "sliders": [
     {
@@ -93,15 +101,6 @@
       "min": 1600,
       "max": 2800,
       "step": 50,
-      "unit": "kr/m²/år",
-      "gruppe": "overblik"
-    },
-    {
-      "id": "driftSqm",
-      "label": "Driftsomkostninger",
-      "min": 250,
-      "max": 650,
-      "step": 25,
       "unit": "kr/m²/år",
       "gruppe": "overblik"
     },
@@ -178,8 +177,89 @@
       "gruppe": "byggedetaljer"
     },
     {
-      "id": "realLtv",
-      "label": "Realkredit-LTV (af ejendomsværdi)",
+      "id": "grundskyld",
+      "label": "Grundskyld",
+      "min": 0,
+      "max": 500000,
+      "step": 5000,
+      "unit": "DKK",
+      "gruppe": "drift"
+    },
+    {
+      "id": "forsikring",
+      "label": "Forsikring",
+      "min": 0,
+      "max": 300000,
+      "step": 5000,
+      "unit": "DKK",
+      "gruppe": "drift"
+    },
+    {
+      "id": "admPct",
+      "label": "Administration (af eff. leje)",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "%",
+      "gruppe": "drift"
+    },
+    {
+      "id": "vedlSqm",
+      "label": "Vedligehold",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "kr/m²/år",
+      "gruppe": "drift"
+    },
+    {
+      "id": "divSqm",
+      "label": "Diverse",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "kr/m²/år",
+      "gruppe": "drift"
+    },
+    {
+      "id": "ltcPct",
+      "label": "Byggelån (LTC af projektsum)",
+      "min": 0,
+      "max": 85,
+      "step": 5,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "seniorRate",
+      "label": "Senior-rente (op til 65 %)",
+      "min": 2,
+      "max": 8,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "juniorRate",
+      "label": "Junior-rente (over 65 %)",
+      "min": 4,
+      "max": 14,
+      "step": 0.5,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "ioPeriod",
+      "label": "Afdragsfri byggefase",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "år",
+      "gruppe": "finans"
+    },
+    {
+      "id": "rkLtv",
+      "label": "Realkredit-LTV ved refi",
       "min": 0,
       "max": 80,
       "step": 5,
@@ -187,12 +267,21 @@
       "gruppe": "finans"
     },
     {
-      "id": "realRente",
+      "id": "rkRate",
       "label": "Realkreditrente inkl. bidrag",
       "min": 2,
       "max": 8,
       "step": 0.25,
       "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "amorYrs",
+      "label": "Løbetid, annuitet",
+      "min": 10,
+      "max": 30,
+      "step": 5,
+      "unit": "år",
       "gruppe": "finans"
     },
     {
@@ -230,6 +319,33 @@
       "step": 0.5,
       "unit": "%",
       "gruppe": "exit"
+    },
+    {
+      "id": "devPctYr",
+      "label": "Development & mgmt fee p.a.",
+      "min": 0,
+      "max": 5,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "fees"
+    },
+    {
+      "id": "finFeePct",
+      "label": "Finansierings-fee (af lånesum)",
+      "min": 0,
+      "max": 3,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "fees"
+    },
+    {
+      "id": "projMdr",
+      "label": "Projektperiode",
+      "min": 12,
+      "max": 60,
+      "step": 3,
+      "unit": "mdr.",
+      "gruppe": "fees"
     }
   ],
   "thresholds": {
@@ -302,20 +418,6 @@
       ]
     },
     {
-      "id": "driftSqm",
-      "label": "Driftsomk. (kr/m²/år)",
-      "fmt": "kr",
-      "values": [
-        250,
-        300,
-        350,
-        425,
-        475,
-        525,
-        600
-      ]
-    },
-    {
       "id": "capRate",
       "label": "Cap rate (%)",
       "fmt": "pctRaw",
@@ -341,34 +443,6 @@
         27000000,
         29000000,
         31000000
-      ]
-    },
-    {
-      "id": "realLtv",
-      "label": "Realkredit-LTV (%)",
-      "fmt": "pctRaw",
-      "values": [
-        0,
-        40,
-        50,
-        60,
-        70,
-        75,
-        80
-      ]
-    },
-    {
-      "id": "realRente",
-      "label": "Realkreditrente (%)",
-      "fmt": "pctRaw",
-      "values": [
-        3,
-        3.5,
-        4,
-        4.5,
-        5,
-        5.5,
-        6
       ]
     },
     {
@@ -411,6 +485,48 @@
         260,
         280,
         300
+      ]
+    },
+    {
+      "id": "ltcPct",
+      "label": "Byggelån LTC (%)",
+      "fmt": "pctRaw",
+      "values": [
+        0,
+        40,
+        50,
+        60,
+        65,
+        75,
+        85
+      ]
+    },
+    {
+      "id": "seniorRate",
+      "label": "Senior-rente (%)",
+      "fmt": "pctRaw",
+      "values": [
+        3,
+        3.5,
+        4,
+        4.5,
+        5,
+        5.5,
+        6
+      ]
+    },
+    {
+      "id": "rkRate",
+      "label": "Realkreditrente (%)",
+      "fmt": "pctRaw",
+      "values": [
+        3,
+        3.5,
+        4,
+        4.5,
+        5,
+        5.5,
+        6
       ]
     }
   ],
@@ -461,5 +577,27 @@
   "grundlag": {
     "beregningId": 5,
     "parameterVersion": "2026.1"
-  }
+  },
+  "myndighedsscenarier": [
+    {
+      "navn": "Væsentligt reduceret",
+      "bebygPct": 160,
+      "note": "Kommunen skærer udnyttelsen markant"
+    },
+    {
+      "navn": "Reduceret",
+      "bebygPct": 200,
+      "note": "Lavere bebyggelsesprocent end forudsat"
+    },
+    {
+      "navn": "Som forudsat",
+      "bebygPct": 240,
+      "note": "Casens udgangsantagelse"
+    },
+    {
+      "navn": "Udvidet",
+      "bebygPct": 280,
+      "note": "Højere udnyttelse end forudsat"
+    }
+  ]
 }
