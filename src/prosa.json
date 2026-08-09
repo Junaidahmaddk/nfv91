@@ -11,11 +11,11 @@
         "udkast": true
       },
       {
-        "tekst": "Afkastet ligger i salget, ikke i driften. Driftsoverskuddet (NOI) er ca. 3,24 mio. kr. i år 1, hvilket giver et yield on cost på 2,98 % — lavere end den cap rate på 3,75 %, ejendommen værdiansættes til. Målt som investeringsejendom er projektet ca. 22,4 mio. kr. mindre værd, end det koster at opføre, og det er forskellen mellem ejerboligprisen ved stykvis salg og investorværdien, der bærer casen. De to øvrige exit-metoder giver negativt resultat med udgangsforudsætningerne.",
+        "tekst": "Afkastet ligger i salget, ikke i driften. Driftsoverskuddet (NOI) er ca. 3,24 mio. kr., når huset står færdigt og er lejet ud, hvilket giver et yield on cost på 2,98 % — lavere end den cap rate på 3,75 %, ejendommen værdiansættes til. Målt som investeringsejendom er projektet ca. 22,4 mio. kr. mindre værd, end det koster at opføre. Det er forskellen mellem ejerboligprisen ved stykvis salg og investorværdien, der bærer casen; de to øvrige exit-metoder giver negativt resultat.",
         "udkast": true
       },
       {
-        "tekst": "Alle tal på siden beregnes live ud fra forudsætningerne på de øvrige faner, og de fire vigtigste kan trækkes direkte her på siden under «Regn selv». Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. Exit-metoden skiftes på fanen Exit/Salg, «Myndighedsscenarier» nedenfor viser casen ved andre udfald af plangrundlaget, og Følsomhed-fanen sætter to forudsætninger op mod hinanden ad gangen.",
+        "tekst": "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån, byggekredit og realkredit ved stabiliseret drift. De første tre år har projektet ingen lejeindtægt, men bærer renter — ca. 4,3 mio. kr. i alt. Det er en reel omkostning, som modellen nu regner med. Alle tal på siden beregnes live, og de fire vigtigste forudsætninger kan trækkes direkte her på siden under «Regn selv». Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. «Myndighedsscenarier» nedenfor viser casen ved andre udfald af plangrundlaget.",
         "udkast": true
       }
     ]
@@ -28,11 +28,11 @@
         "udkast": true
       },
       {
-        "tekst": "Finansieringen er to-faset: et byggelån på 65 % af projektsummen løber afdragsfrit i de første 3 år og refinansieres derefter til realkredit. Projektperioden er sat til 36 måneder — den periode, development- og finansierings-fee faktureres over — og exithorisonten er 5 år. Ved stykvis salg fordeles salget jævnt over exithorisonten, så de sidste boliger afhændes i det sidste år; ved samlet salg sker hele afhændelsen i exitåret.",
+        "tekst": "Finansieringen følger tre faser. Fase 1 er grundkøbet: et afdragsfrit grundkøbslån på 60 % af købesummen løber i det første år, mens due diligence, plangrundlag og byggetilladelse falder på plads. Fase 2 er byggeriet: en byggekredit på 65 % af projektsummen indfrier grundkøbslånet og trækkes gradvist over to år. Fase 3 er stabiliseret drift: byggekreditten refinansieres til realkredit på 70 % af ejendomsværdien som annuitet over 30 år. Først dér begynder lejeindtægterne og salget.",
         "udkast": true
       },
       {
-        "tekst": "Modellen regner i hele år med år 0 som første driftsår. Byggelånets afdragsfrie fase er modelleret, men der er ikke en byggeperiode uden lejeindtægt: år 0 bærer både fuld leje og fuld renteudgift. En forsinkelse i byggeriet vil i praksis skubbe både lejeindtægter og salgsprovenu.",
+        "tekst": "Modellen regner i hele år med år 0 som købsåret. De første tre år — grundkøbs- og byggefasen — har ingen lejeindtægt overhovedet, kun renter, og salget af boligerne fordeles over driftsårene frem til exithorisonten i år 5. Bliver byggeriet forsinket, skubbes både lejeindtægter og salgsprovenu, mens renterne løber videre; Følsomhed-fanen har byggeperioden som akse, så effekten kan aflæses direkte.",
         "udkast": true
       }
     ]
@@ -70,7 +70,7 @@
         "udkast": true
       },
       {
-        "tekst": "Modelforenklinger: der regnes i hele år fra år 0, og selv om byggelånets afdragsfrie fase er modelleret, er der ingen byggeperiode uden lejeindtægt. De faste driftsposter — grundskyld og forsikring — er sat ud fra satser pr. m² etageareal fra en sammenlignelig case på samme vej og er ikke hentet fra ejendommens egne opgørelser. Teksterne er skrevet til udgangsforudsætningerne; er sliderne flyttet og gemt, kan tallene i graferne afvige fra dem, der nævnes her.",
+        "tekst": "Modelforenklinger: der regnes i hele år fra købsåret. Byggekreditten antages trukket lineært over byggeperioden, så renten beregnes på et gennemsnitligt træk; i praksis følger trækket byggetakten. Realkreditydelsen holdes fast, når boliger sælges fra og gælden nedbringes — et rigtigt annuitetslån ville afkorte løbetiden eller sætte ydelsen ned. De faste driftsposter — grundskyld og forsikring — er sat ud fra satser pr. m² etageareal fra en sammenlignelig case på samme vej og er ikke hentet fra ejendommens egne opgørelser. Teksterne er skrevet til udgangsforudsætningerne; er sliderne flyttet og gemt, kan tallene i graferne afvige fra dem, der nævnes her.",
         "udkast": true
       },
       {
@@ -103,7 +103,15 @@
         "udkast": true
       },
       {
-        "tekst": "Udlejningen. Lejen på 2.100 kr/m²/år svarer til ca. 15.000 kr. om måneden for en bolig på 86 m². Break-even-lejen — den leje, der skal til, før ejendommens værdi ved 3,75 % cap rate matcher kapitalindsatsen — er ca. 2.550 kr/m²/år. Driften bærer altså ikke projektet ved den forudsatte leje, og længere tomgang eller lavere leje øger afhængigheden af salget.",
+        "tekst": "Renten og bankens nøgletal. Byggekreditten kan det færdige hus lige akkurat bære: DSCR — driftsoverskuddet i forhold til den årlige ydelse — er 1,15 dér. Realkreditten kan det derimod ikke. En annuitet på 70 % af ejendomsværdien koster ca. 3,71 mio. kr. om året mod et driftsoverskud på ca. 3,24 mio. kr., altså en DSCR på 0,87. Under 1 betyder, at driften ikke kan betale ydelsen, og at forskellen skal dækkes af salg eller egenkapital. En bank vil normalt kræve 1,2 og opefter, så realkreditten i fase 3 skal enten være mindre eller afdragsfri i en periode. Det er en åben post i casen.",
+        "udkast": true
+      },
+      {
+        "tekst": "Refinansieringen mellem fase 2 og 3. Byggekreditten er på ca. 70,6 mio. kr., men realkreditten rækker kun til ca. 60,4 mio. kr. ved 70 % af ejendomsværdien. Forskellen — ca. 10,2 mio. kr. — skal lægges kontant på bordet den dag byggeriet er færdigt. Sammen med renterne i de første tre år er det grunden til, at den samlede egenkapital er ca. 50,0 mio. kr. og ikke de ca. 39,4 mio., projektsummen alene tilsiger.",
+        "udkast": true
+      },
+      {
+        "tekst": "Tiden uden indtægt. Grundkøbs- og byggefasen løber over tre år, hvor projektet betaler ca. 4,3 mio. kr. i renter uden en krone i leje. Hvert ekstra år i den fase koster både renter og et års forskydning af hele salgsprovenuet. Det er den mest direkte kobling mellem tidsplan og afkast i casen.",
         "udkast": true
       }
     ]
@@ -177,6 +185,22 @@
       },
       {
         "tekst": "Development & management fee — Fairhomes' honorar for at udvikle og styre projektet, opgjort som en procentsats p.a. af projektsummen over projektperioden. Finansierings-fee'et er et engangshonorar af lånesummen og er momsfrit.",
+        "udkast": true
+      },
+      {
+        "tekst": "Grundkøbslån — det lån, der finansierer selve grundkøbet, indtil byggeriet går i gang. Det er dyrere end en byggekredit, fordi der endnu ikke er noget byggeri at stille som sikkerhed, og det er afdragsfrit.",
+        "udkast": true
+      },
+      {
+        "tekst": "Byggekredit — kreditten, der finansierer opførelsen. Den indfrier grundkøbslånet ved byggestart og trækkes gradvist, efterhånden som håndværkerregningerne forfalder, så renten kun løber på det beløb, der faktisk er trukket.",
+        "udkast": true
+      },
+      {
+        "tekst": "Negativ carry — de renter, projektet betaler i den periode, hvor der endnu ingen lejeindtægt er. De er en reel omkostning, selv om der ikke sker noget synligt på byggepladsen.",
+        "udkast": true
+      },
+      {
+        "tekst": "DSCR under 1 — driftsoverskuddet er mindre end den årlige ydelse på lånet. Ejendommen kan altså ikke betale sin egen gæld af driften alene, og forskellen skal komme fra salg eller fra ejerens lomme.",
         "udkast": true
       }
     ]

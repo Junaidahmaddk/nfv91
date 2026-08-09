@@ -14,6 +14,9 @@
 //              "itemised" — grundskyld + forsikring (DKK) + admin (% af eff. leje)
 //                           + vedligehold + diverse (kr/m²), fladt (NFV)
 //   debtMode:  "singleIO" — ét afdragsfrit realkreditlån: min(iv4×LTV, pI) (LGV)
+//              "threePhase" — grundkøbslån (LTV af grunden) → byggekredit (LTC, indfrier
+//                             grundlånet) → realkredit. Ingen leje i fase 1-2; renterne
+//                             dér er negativ carry. Drift og salg starter ved stabilisering.
 //              "twoPhase" — byggelån (LTC, senior≤65/junior-split, blended rente,
 //                           IO-periode) → realkredit-refi (rkLtv af iv4, refi-gap,
 //                           annuitet over amorYrs), pro-rata indfrielse ved salg (NFV)
@@ -166,6 +169,7 @@ export function calcModel(P, spec) {
   var cfLev = [], loanAmt = 0, bankFeeKr = 0, cashEquity = 0, cashIndskud = 0, equityTotal = 0, eqInvested = 0;
   var debt0 = 0, ydIO = 0, seniorAmt = 0, juniorAmt = 0, blendedRate = 0;
   var rkLoan = 0, rkMaxLoan = 0, rkRefiGap = 0, ydRkAnnuitet = 0, ydAnnuitet = 0, dscrRk = null;
+  var faser = null; // kun sat i threePhase: fasernes lån, renter og årstal
   var cumNoiLev = 0, cumDSLev = 0, cumRepay = 0, cumSalgLev = 0, cumBrutto = 0, cumMaegler = 0;
   var levCumNoiExit = 0, levSalgNet = 0, totalRetLev = 0, totalRetPctLev = 0, cagrLev = 0, eqMultLev = 0;
   var dscr = 99, cocReturn = 0, loanBalExit = 0, exitBrutto = 0, exitMaegler = 0, exitRepay = 0;
@@ -291,6 +295,122 @@ export function calcModel(P, spec) {
     exitBrutto = holdMode ? exitValueHold : cumBrutto;
     exitMaegler = holdMode ? 0 : cumMaegler;
     exitRepay = holdMode ? finalBalAtExit : cumRepayAtExit + finalBalAtExit;
+  } else if (debtMode === "threePhase") {
+    // ── Faseopdelt: grundkøbslån → byggekredit → realkredit ──
+    // Fase 1 (grundkøb) og fase 2 (byggeri) har INGEN lejeindtægt. Renterne i de to
+    // faser er en negativ carry, der løber på det akkumulerede driftsresultat — de
+    // indgår altså én gang, ikke også i egenkapitalen. Drift og salg starter først,
+    // når byggeriet står færdigt.
+    var gYrs = Math.max(0, Math.round(Q.grundYrs || 0));
+    var bYrs = Math.max(0, Math.round(Q.byggeYrs || 0));
+    var stabYear = gYrs + bYrs;                 // første driftsår
+    var exitYear = Math.max(Q.tyrs, stabYear);  // exit kan ikke ligge før stabilisering
+    var driftAar = exitYear - stabYear + 1;
+    var salgPrAar3 = driftAar > 0 ? Q.units / driftAar : Q.units;
+
+    // Fase 1 — grundkøbsfinansiering: lån på grundkøbet, afdragsfrit
+    var grundLaan = land * Q.grundLtv / 100;
+    var gRate = Q.grundRate / 100;
+    var ydGrund = grundLaan * gRate;
+    var grundRenter = ydGrund * gYrs;
+
+    // Fase 2 — byggekredit: LTC af hele projektsummen, senior ≤65 % / junior derover.
+    // Kreditten indfrier grundkøbslånet ved byggestart og trækkes derefter lineært,
+    // så den gennemsnitlige restgæld i byggefasen er midt mellem de to.
+    loanAmt = pI * Q.ltcPct / 100;
+    var seniorPct3 = Math.min(65, Q.ltcPct);
+    var juniorPct3 = Math.max(0, Q.ltcPct - 65);
+    seniorAmt = pI * seniorPct3 / 100;
+    juniorAmt = pI * juniorPct3 / 100;
+    blendedRate = loanAmt > 0 ? (seniorAmt * Q.seniorRate / 100 + juniorAmt * Q.juniorRate / 100) / loanAmt : 0;
+    var byggeGnsnit = (grundLaan + loanAmt) / 2;
+    var ydByg = byggeGnsnit * blendedRate;
+    var byggeRenter = ydByg * bYrs;
+    ydIO = loanAmt * blendedRate;               // fuld byggekredit ved færdiggørelse
+    bankFeeKr = (grundLaan + loanAmt) * Q.bankFee / 100; // stiftelse på begge lån
+
+    // Fase 3 — realkredit ved stabilisering: LTV af ejendomsværdien, annuitet
+    var rkR3 = Q.rkRate / 100;
+    rkMaxLoan = iv4 * Q.rkLtv / 100;
+    rkLoan = Math.min(loanAmt, rkMaxLoan);
+    rkRefiGap = Math.max(0, loanAmt - rkMaxLoan);
+    ydRkAnnuitet = Q.amorYrs > 0 && rkLoan > 0 ? rkLoan * (rkR3 * Math.pow(1 + rkR3, Q.amorYrs)) / (Math.pow(1 + rkR3, Q.amorYrs) - 1) : 0;
+    ydAnnuitet = ydRkAnnuitet;
+
+    var egenIndskud = pI - loanAmt;             // egenkapital i selve projektsummen
+    eqInvested = egenIndskud + bankFeeKr + rkRefiGap;
+    cashEquity = egenIndskud;
+    cashIndskud = egenIndskud + bankFeeKr;
+    equityTotal = eqInvested;
+    debt0 = grundLaan;
+
+    var rkBal3 = rkLoan, solgt3 = 0;
+    var cumNoi3Exit = 0, cumSalg3Exit = 0, cumRepay3Exit = 0, finalBal3Exit = 0;
+    for (var y3 = 0; y3 <= Math.max(exitYear, 10); y3++) {
+      var fase3 = y3 < gYrs ? "GRUND" : (y3 < stabYear ? "BYG" : "RK");
+      var noi3 = 0, ds3 = 0, salg3 = 0, repay3 = 0, sold3 = 0, refi3 = false;
+      if (fase3 === "GRUND") {
+        ds3 = ydGrund;
+      } else if (fase3 === "BYG") {
+        ds3 = ydByg;
+      } else {
+        if (y3 === stabYear) refi3 = true;
+        var rent3 = Q.rent * Math.pow(1 + Q.lejeStig / 100, y3);
+        var rem3 = Math.max(Q.units - solgt3, 0);
+        var area3 = rem3 * AU;
+        var bl3 = area3 * rent3, tom3 = bl3 * Q.tomgang / 100, eff3 = bl3 - tom3;
+        noi3 = eff3 - opexYear(y3, area3, eff3, rem3);
+        ds3 = rkBal3 > 0 ? Math.min(ydRkAnnuitet, rkBal3 * (1 + rkR3)) : 0;
+        var int3 = rkBal3 * rkR3;
+        rkBal3 = Math.max(rkBal3 - Math.min(ds3 - int3, rkBal3), 0);
+        if (solgt3 < Q.units && !holdMode) {
+          if (capMode) {
+            if (y3 === exitYear) {
+              sold3 = Q.units - solgt3;
+              var br3 = noi3 / (Q.capRate / 100), mg3 = br3 * Q.maeglerPct / 100;
+              salg3 = br3 - mg3; cumBrutto += br3; cumMaegler += mg3;
+              repay3 = rkBal3; rkBal3 = 0;
+            }
+          } else {
+            sold3 = Math.min(Math.round(salgPrAar3), Q.units - solgt3);
+            if (y3 === exitYear) sold3 = Q.units - solgt3;
+            var brs3 = sold3 * AU * Q.spSqm, mgs3 = brs3 * Q.maeglerPct / 100;
+            salg3 = brs3 - mgs3; cumBrutto += brs3; cumMaegler += mgs3;
+            repay3 = Math.min(rkBal3, rkLoan * sold3 / Q.units);
+            rkBal3 = Math.max(rkBal3 - repay3, 0);
+          }
+        }
+      }
+      solgt3 += sold3;
+      var efterDS3 = noi3 - ds3;
+      cumNoiLev += efterDS3;
+      cumDSLev += ds3;
+      cumSalgLev += salg3;
+      cumRepay += repay3;
+      var bal3 = fase3 === "GRUND" ? grundLaan : (fase3 === "BYG" ? byggeGnsnit : rkBal3);
+      cfLev.push({ year: y3, noi: Math.round(noi3), ds: Math.round(ds3), noiAfterDS: Math.round(efterDS3), salg: Math.round(salg3), salgNet: Math.round(salg3 - repay3), repay: Math.round(repay3), cumNoi: Math.round(cumNoiLev), cumSalg: Math.round(cumSalgLev - cumRepay), cumProfit: Math.round(cumNoiLev + cumSalgLev - cumRepay - eqInvested), loanBal: Math.round(bal3), remain: Q.units - solgt3, refi: refi3, phase: fase3 });
+      if (y3 === exitYear) { cumNoi3Exit = cumNoiLev; cumSalg3Exit = cumSalgLev; cumRepay3Exit = cumRepay; finalBal3Exit = rkBal3; }
+    }
+    levCumNoiExit = cumNoi3Exit;
+    levSalgNet = holdMode ? exitValueHold - finalBal3Exit : cumSalg3Exit - cumRepay3Exit - finalBal3Exit;
+    totalRetLev = levCumNoiExit + levSalgNet - eqInvested;
+    totalRetPctLev = eqInvested > 0 ? totalRetLev / eqInvested : 0;
+    var pRetSafe3 = 1 + totalRetPctLev;
+    cagrLev = exitYear > 0 ? ((eqInvested > 0 && pRetSafe3 > 0) ? Math.pow(pRetSafe3, 1 / exitYear) - 1 : -1) : totalRetPctLev;
+    eqMultLev = eqInvested > 0 ? (holdMode ? (cumNoi3Exit + exitValueHold - finalBal3Exit) / eqInvested : (cumNoi3Exit + cumSalg3Exit - cumRepay3Exit - finalBal3Exit) / eqInvested) : 0;
+    dscr = ydIO > 0 ? noi / ydIO : 99;                   // kan det færdige hus bære byggekreditten?
+    dscrRk = ydRkAnnuitet > 0 ? noi / ydRkAnnuitet : 99; // driftsfasen
+    cocReturn = eqInvested > 0 ? (noi - ydRkAnnuitet) / eqInvested : 0;
+    loanBalExit = finalBal3Exit;
+    exitBrutto = holdMode ? exitValueHold : cumBrutto;
+    exitMaegler = holdMode ? 0 : cumMaegler;
+    exitRepay = holdMode ? finalBal3Exit : cumRepay3Exit + finalBal3Exit;
+    faser = {
+      grundLaan: grundLaan, grundEgen: land - grundLaan, ydGrund: ydGrund, grundRenter: grundRenter,
+      byggeGnsnit: byggeGnsnit, ydByg: ydByg, byggeRenter: byggeRenter,
+      carryIalt: grundRenter + byggeRenter,
+      gYrs: gYrs, byggeYrs: bYrs, stabYear: stabYear, exitYear: exitYear, driftAar: driftAar
+    };
   } else {
     // ── LGV-model: ét afdragsfrit realkreditlån, optages ved færdiggørelse ──
     // LTV af ejendomsværdien (NOI/cap), dog højst byggesummen; evt. grundgæld ligger ovenpå
@@ -449,6 +569,7 @@ export function calcModel(P, spec) {
     equityTotal: equityTotal, eqInvested: eqInvested, debt0: debt0, ydIO: ydIO,
     seniorAmt: seniorAmt, juniorAmt: juniorAmt, blendedRate: blendedRate,
     rkLoan: rkLoan, rkMaxLoan: rkMaxLoan, rkRefiGap: rkRefiGap, ydRkAnnuitet: ydRkAnnuitet, ydAnnuitet: ydAnnuitet,
+    faser: faser,
     dscr: dscr, dscrRk: dscrRk, cocReturn: cocReturn,
     // leveraged
     cfLev: cfLev, totalRetLev: totalRetLev, totalRetPctLev: totalRetPctLev, cagrLev: cagrLev, eqMultLev: eqMultLev,
