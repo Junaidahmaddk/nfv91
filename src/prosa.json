@@ -107,7 +107,11 @@
         "udkast": true
       },
       {
-        "tekst": "Refinansieringen mellem fase 2 og 3. Byggekreditten er på ca. 70,6 mio. kr., men realkreditten rækker kun til ca. 60,4 mio. kr. ved 70 % af ejendomsværdien. Forskellen — ca. 10,2 mio. kr. — skal lægges kontant på bordet den dag byggeriet er færdigt. Sammen med renterne i de første tre år er det grunden til, at den samlede egenkapital er ca. 50,0 mio. kr. og ikke de ca. 39,4 mio., projektsummen alene tilsiger.",
+        "tekst": "Refinansieringen mellem fase 2 og 3. Ved stabilisering trækkes hele realkreditkapaciteten — ikke kun det, byggekreditten skylder. Med casens udgangsforudsætninger rækker den ikke: byggekreditten er ca. 70,6 mio. kr., mens 70 % af ejendomsværdien kun giver ca. 60,4 mio. Forskellen på ca. 10,2 mio. skal lægges kontant den dag byggeriet er færdigt. Ligger lejen derimod højere, vender regnestykket: overstiger kapaciteten gælden, udbetales overskuddet til ejerkredsen som cash-out og frigør bunden kapital. Fanen viser begge udfald afhængigt af de valgte forudsætninger.",
+        "udkast": true
+      },
+      {
+        "tekst": "Prisen for at trække kapital ud. Cash-out er ikke gratis: hver ekstra lånt krone forrentes i hele driftsperioden og skal indfries ved exit. En højere belåningsgrad frigør altså likviditet, men sænker både det samlede overskud og DSCR. Ved casens udgangstal for byggepris og salgspris falder DSCR under 1 allerede ved moderat belåning, og en bank vil normalt ikke låne så langt. Belåningsgraden bør derfor styres af, hvad driften kan bære — ikke af, hvad ejendomsværdien tillader.",
         "udkast": true
       },
       {
@@ -201,6 +205,14 @@
       },
       {
         "tekst": "DSCR under 1 — driftsoverskuddet er mindre end den årlige ydelse på lånet. Ejendommen kan altså ikke betale sin egen gæld af driften alene, og forskellen skal komme fra salg eller fra ejerens lomme.",
+        "udkast": true
+      },
+      {
+        "tekst": "Cash-out — når ejendommen ved refinansieringen er så meget værd, at det nye lån overstiger den gæld, der skal indfries, kan forskellen udbetales til ejerkredsen. Pengene er lånte, ikke tjente: de forrentes og skal betales tilbage ved salget.",
+        "udkast": true
+      },
+      {
+        "tekst": "Bunden egenkapital — den del af den indskudte kapital, der stadig står i projektet efter refinansieringen. Toppen er derimod det maksimale beløb, ejerkredsen skal kunne stille undervejs, og den falder ikke af en cash-out.",
         "udkast": true
       }
     ]

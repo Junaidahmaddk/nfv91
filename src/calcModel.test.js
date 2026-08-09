@@ -741,3 +741,75 @@ describe("(d) threePhase — faseopdelt finansiering", () => {
     expect(two.cfLev[0].noi).toBeGreaterThan(0); // twoPhase har leje fra år 0
   });
 });
+
+describe("(e) threePhase — cash-out ved refinansiering", () => {
+  // høj leje + lav cap rate → ejendomsværdien overstiger byggekreditten, så
+  // realkreditkapaciteten rækker længere end gælden og frigør kapital
+  const rig = (over) => m3(Object.assign({ rent: 2800, capRate: 3.0 }, over || {}));
+
+  it("hele realkreditkapaciteten trækkes — ikke kun det, byggekreditten skylder", () => {
+    const m = rig({ rkLtv: 70 });
+    expect(m.rkLoan).toBeCloseTo(m.iv4 * 0.70, 2);
+    expect(m.rkLoan).toBeGreaterThan(m.loanAmt); // netop pointen: ikke kappet ved gælden
+  });
+
+  it("overskuddet over byggekreditten bliver cash-out til ejerkredsen", () => {
+    const m = rig({ rkLtv: 70 });
+    expect(m.rkCashOut).toBeCloseTo(m.rkLoan - m.loanAmt, 2);
+    expect(m.rkRefiGap).toBe(0);
+  });
+
+  it("rækker kapaciteten ikke, er der refi-gap og ingen cash-out", () => {
+    const m = rig({ rkLtv: 40 });
+    expect(m.rkLoan).toBeLessThan(m.loanAmt);
+    expect(m.rkCashOut).toBe(0);
+    expect(m.rkRefiGap).toBeCloseTo(m.loanAmt - m.rkLoan, 2);
+  });
+
+  it("cash-out frigør bunden egenkapital uden at ændre toppen", () => {
+    const lav = rig({ rkLtv: 55 }), hoej = rig({ rkLtv: 70 });
+    expect(hoej.eqBrutto).toBeCloseTo(lav.eqBrutto, 2);       // toppen er den samme
+    expect(hoej.eqEfterRefi).toBeLessThan(lav.eqEfterRefi);   // men mindre bindes fremadrettet
+    expect(hoej.eqEfterRefi).toBeCloseTo(hoej.eqBrutto - hoej.rkCashOut, 2);
+  });
+
+  it("bunden egenkapital kan ikke gå under nul", () => {
+    const m = rig({ rkLtv: 80 });
+    expect(m.rkCashOut).toBeGreaterThan(m.eqBrutto);
+    expect(m.eqEfterRefi).toBe(0);
+  });
+
+  it("cash-out indgår i afkastet, og den ekstra gæld indfries ved exit", () => {
+    const m = rig({ rkLtv: 70 });
+    expect(m.totalRetLev).toBeCloseTo(m.levCumNoiExit + m.levSalgNet + m.rkCashOut - m.eqBrutto, 2);
+    expect(m.loanBalExit).toBeCloseTo(0, 0); // hele realkreditten er indfriet ved exit
+  });
+
+  it("cash-out koster rente — højere LTV giver lavere samlet profit", () => {
+    const lav = rig({ rkLtv: 55 }), hoej = rig({ rkLtv: 70 });
+    expect(hoej.totalRetLev).toBeLessThan(lav.totalRetLev);
+    expect(hoej.ydRkAnnuitet).toBeGreaterThan(lav.ydRkAnnuitet);
+    expect(hoej.dscrRk).toBeLessThan(lav.dscrRk);
+  });
+
+  it("cash-out bogføres i stabiliseringsåret, ikke før", () => {
+    const m = rig({ rkLtv: 70 });
+    const stab = m.faser.stabYear;
+    for (let y = 0; y < stab; y++) expect(m.cfLev[y].cashOut).toBe(0);
+    expect(m.cfLev[stab].cashOut).toBeCloseTo(Math.round(m.rkCashOut), 0);
+    expect(m.cfLev[stab + 1].cashOut).toBe(0);
+  });
+
+  it("casens udgangstal giver refi-gap, ikke cash-out", () => {
+    const m = m3(); // leje 2.100, cap rate 3,75 → værdi under byggekreditten
+    expect(m.rkCashOut).toBe(0);
+    expect(m.rkRefiGap).toBeGreaterThan(0);
+    expect(m.eqEfterRefi).toBeCloseTo(m.eqBrutto, 2);
+  });
+
+  it("twoPhase er uændret — ingen cash-out-felter", () => {
+    const two = calcModel({}, Object.assign({}, SPEC3, { model: Object.assign({}, SPEC3.model, { debtMode: "twoPhase" }) }));
+    expect(two.rkCashOut).toBe(0);
+    expect(two.rkLoan).toBeLessThanOrEqual(two.loanAmt); // stadig kappet ved gælden
+  });
+});
