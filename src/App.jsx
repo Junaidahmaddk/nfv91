@@ -361,7 +361,7 @@ export default function App() {
       <TabBar tabs={tabs} active={tab} onChange={setTab} />
 
       {tab === "memo" && <>
-        <TabIntro>Letlæst introduktion til projektet — start her. Tal i nøgletalskortene opdateres live med forudsætningerne fra de øvrige faner. Afsnit markeret <b>UDKAST</b> er endnu ikke gennemgået af et menneske.</TabIntro>
+        <TabIntro>Letlæst introduktion til projektet — start her. Tallene i nøgletalskortene opdateres live med forudsætningerne fra de øvrige faner og er opgjort før skat. Afsnit markeret <b>UDKAST</b> er endnu ikke gennemgået af et menneske.</TabIntro>
         <ProsaSec sektion={prosa.memo} />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 24 }}>
@@ -374,6 +374,8 @@ export default function App() {
         {/* ortofoto + skråfotos — hver celle skjules, hvis filen mangler */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 8 }}>
           <Billede src="ortofoto.jpg" alt="Ortofoto af ejendommen" caption="Ortofoto — ejendommen set fra oven" />
+          <Billede src="ortofoto-oversigt.jpg" alt="Ortofoto af kvarteret omkring ejendommen" caption="Ortofoto — kvarteret omkring ejendommen" />
+          <Billede src="matrikelkort.png" alt="Matrikelkort med skel og vejlinjer" caption="Matrikelkort — skel og vejlinjer omkring ejendommen" />
           <Billede src="skraafoto-n.jpg" alt="Skråfoto set fra nord" caption="Skråfoto — set fra nord" />
           <Billede src="skraafoto-s.jpg" alt="Skråfoto set fra syd" caption="Skråfoto — set fra syd" />
           <Billede src="skraafoto-e.jpg" alt="Skråfoto set fra øst" caption="Skråfoto — set fra øst" />
@@ -385,8 +387,8 @@ export default function App() {
 
         <ProsaSec sektion={prosa.tidslinje} />
         <ProsaSec sektion={prosa.risici} />
-        <ProsaSec sektion={prosa.marked} sub="Researched markedsgrundlag for casens forudsætninger" />
-        <ProsaSec sektion={prosa.ordforklaring} sub="De vigtigste fagudtryk i dette værktøj — forklaret uden forudsætninger" />
+        <ProsaSec sektion={prosa.marked} sub="Markedsgrundlaget bag casens forudsætninger — og hvad der mangler at blive dokumenteret" />
+        <ProsaSec sektion={prosa.ordforklaring} sub="De vigtigste fagudtryk i dette værktøj — forklaret i almindeligt sprog" />
       </>}
 
       {tab === "overblik" && <>
@@ -567,8 +569,8 @@ export default function App() {
       {tab === "drift" && <>
         <TabIntro>Ejendommen som udlejningsforretning: lejeindtægter, tomgang, driftsomkostninger og NOI (driftsoverskuddet før renter) — grundlaget for både værdiansættelsen og belåningen.</TabIntro>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-          <Kp label="Yield on cost" value={fP(m.yoc)} color={yocC} />
-          <Kp label="Bruttostartafkast" value={fP(m.bAf)} />
+          <Kp label="Yield on cost" value={fP(m.yoc)} sub="NOI / samlet kapital" color={yocC} />
+          <Kp label="Bruttostartafkast" value={fP(m.bAf)} sub="effektiv leje / samlet kapital" />
           <Kp label={"Implied værdi (" + P.capRate + "% cap)"} value={f(m.iv4)} sub={(m.iv4 > m.totalCapital ? "+" : "-") + f(Math.abs(m.iv4 - m.totalCapital)) + " vs kapital"} color={ivC} />
           <Kp label="Månedsleje/bolig" value={fK(Math.round(P.rent * AU / 12)) + " kr"} />
         </div>

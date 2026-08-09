@@ -3,11 +3,36 @@
     "titel": "Investment memo",
     "afsnit": [
       {
-        "tekst": "Kort fortalt: Nordre Fasanvej 91 i 2000 Frederiksberg erhverves, og der etableres etageboliger (nybyg) med et forventet etageareal på ca. 1.891 m² (240 % af 788 m² grund). Boligerne udlejes til fri markedsleje, og exit sker ved stykvis salg, samlet salg eller fortsat drift.",
+        "tekst": "Kort fortalt: Nordre Fasanvej 91 i 2000 Frederiksberg erhverves, den eksisterende bebyggelse rives ned, og der opføres etageboliger. Med en bebyggelsesprocent på 240 af grundens 788 m² giver det ca. 1.891 m² etageareal fordelt på 22 boliger à ca. 86 m². Boligerne udlejes til fri markedsleje, og exit sker ved stykvis salg, samlet salg til en investor eller fortsat drift.",
         "udkast": true
       },
       {
-        "tekst": "Projektet tjener penge ad to veje: løbende husleje efter driftsomkostninger, og salgsprovenuet ved exit. Grundlaget er en købspris på 25.000.000 kr., en byggepris på 25.000 kr/m² og en salgspris på 98.500 kr/m². Alle tal på siden opdateres live med forudsætningerne på de øvrige faner.",
+        "tekst": "Økonomien har to ben: driftsoverskuddet fra udlejningen og provenuet ved exit. Med casens udgangsforudsætninger — 25.000.000 kr. for grunden, 25.000 kr/m² i håndværkerudgift og 98.500 kr/m² ved stykvis salg — er den samlede kapitalindsats ca. 108,7 mio. kr., svarende til ca. 57.500 kr/m² etageareal eller ca. 4,9 mio. kr. pr. bolig.",
+        "udkast": true
+      },
+      {
+        "tekst": "Afkastet ligger i salget, ikke i driften. Driftsoverskuddet (NOI) er ca. 3,1 mio. kr. i år 1, hvilket giver et yield on cost på 2,8 % — lavere end den cap rate på 3,75 %, ejendommen værdiansættes til. Målt som investeringsejendom er projektet altså mindre værd, end det koster at opføre, og det er forskellen mellem ejerboligprisen ved stykvis salg og investorværdien, der bærer casen. De to øvrige exit-metoder giver negativt resultat med udgangsforudsætningerne.",
+        "udkast": true
+      },
+      {
+        "tekst": "Alle tal på siden beregnes live ud fra forudsætningerne på de øvrige faner. Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. Exit-metoden skiftes på fanen Exit/Salg, og Følsomhed-fanen viser, hvor meget de enkelte forudsætninger flytter afkastet.",
+        "udkast": true
+      }
+    ]
+  },
+  "tidslinje": {
+    "titel": "Tidslinje & faser",
+    "afsnit": [
+      {
+        "tekst": "Rækkefølgen i et nedrivnings- og nybygprojekt som dette: købsaftale og due diligence → afklaring af plangrundlag og byggetilladelse → projektering → nedrivning og miljøsanering → opførelse → udlejning og stabilisering → exit. Der er endnu ikke lagt en konkret tidsplan med datoer for casen.",
+        "udkast": true
+      },
+      {
+        "tekst": "Modellen regner med en projektperiode på 36 måneder — den periode, management fee'et faktureres over — og en exithorisont på 5 år. Ved stykvis salg fordeles salget jævnt over exithorisonten, så de sidste boliger afhændes i det sidste år; ved samlet salg sker hele afhændelsen i exitåret.",
+        "udkast": true
+      },
+      {
+        "tekst": "Modellen regner i hele år med år 0 som første driftsår. Byggeperiodens likviditet og renter indgår derfor ikke som en selvstændig fase i cashflowet, og en forsinkelse i byggeriet vil i praksis skubbe både lejeindtægter og salgsprovenu.",
         "udkast": true
       }
     ]
@@ -16,7 +41,19 @@
     "titel": "Marked & referencer",
     "afsnit": [
       {
-        "tekst": "Markedsafsnittet skal udfyldes med konkrete leje-, salgs- og cap rate-niveauer for mikroområdet i 2000 Frederiksberg samt referenceprojekter med kilder. Modellens udgangspunkt er 98.500 kr/m² ved stykvis salg og 2.100 kr/m²/år i leje.",
+        "tekst": "Casen hviler på tre markedstal: 98.500 kr/m² ved stykvis salg, 2.100 kr/m²/år i fri markedsleje og en cap rate på 3,75 % ved samlet salg. De er modellens input — ikke dokumenterede markedsobservationer. Konkrete referencehandler, udbudspriser og lejeniveauer for mikroområdet i 2000 Frederiksberg mangler stadig og bør indhentes med kilde og dato, før casen lægges frem.",
+        "udkast": true
+      },
+      {
+        "tekst": "De tre tal er ikke uafhængige, og forskellen mellem dem er hele forretningen. En leje på 2.100 kr/m²/år svarer til et driftsoverskud på ca. 1.630 kr/m²/år. Kapitaliseret ved 3,75 % giver det en investorværdi omkring 43.500 kr/m² mod 98.500 kr/m² ved stykvis salg til ejerboligkøbere. Ejerboligmarkedet prisfastsætter altså kvadratmeteren mere end dobbelt så højt som investormarkedet, og det er den forskel, projektet henter.",
+        "udkast": true
+      },
+      {
+        "tekst": "Det gør stykvis salg til den bærende exit og prisantagelsen til det vigtigste enkelttal at få dokumenteret. Ved 98.500 kr/m² svarer det til ca. 8,5 mio. kr. for en bolig på 86 m². Referencerne skal være nybyggede ejerlejligheder i sammenlignelig størrelse og beliggenhed — ikke gennemsnit for hele postnummeret, som blander nyt og ældre byggeri.",
+        "udkast": true
+      },
+      {
+        "tekst": "Leje- og cap rate-siden skal underbygges tilsvarende: faktiske udlejninger af nybyggede lejligheder i området og handler med boligudlejningsejendomme af sammenlignelig type. Indtil det foreligger, bør tallene læses som forudsætninger, der skal testes — Følsomhed-fanen viser, hvad afvigelser fra dem betyder for afkastet.",
         "udkast": true
       }
     ]
@@ -25,11 +62,15 @@
     "titel": "Forbehold",
     "afsnit": [
       {
-        "tekst": "Planrisiko: projektet forudsætter et plangrundlag (lokalplan/byggetilladelse), som ikke er verificeret. Bebyggelsesprocent og etageareal er antagelser.",
+        "tekst": "Planrisiko: projektet forudsætter et plangrundlag — lokalplan og byggetilladelse — som ikke er verificeret. Bebyggelsesprocent, etageareal og antal boliger er antagelser.",
         "udkast": true
       },
       {
-        "tekst": "Grunddata: grundareal, servitutter og tingbog er ikke gennemgået. Miljøforhold (forurening, asbest) er ikke undersøgt.",
+        "tekst": "Grunddata: grundareal, servitutter og tingbogsforhold er ikke gennemgået. Miljøforhold, herunder forurening og asbest i den eksisterende bebyggelse, er ikke undersøgt, og nedrivningsbudgettet er sat skønsmæssigt.",
+        "udkast": true
+      },
+      {
+        "tekst": "Modelforenklinger: der regnes i hele år fra år 0, byggeperioden indgår ikke som en selvstændig fase, og teksterne på siden er skrevet til udgangsforudsætningerne. Er sliderne flyttet og gemt, kan tallene i graferne afvige fra dem, der nævnes i teksten.",
         "udkast": true
       },
       {
@@ -42,15 +83,80 @@
     "titel": "Væsentligste risici — i klart sprog",
     "afsnit": [
       {
-        "tekst": "Kommunen: kræver projektet nyt plangrundlag, er det typisk den største enkeltrisiko. Status skal beskrives konkret for casen.",
+        "tekst": "Plangrundlaget. Etagearealet er beregnet ud fra en bebyggelsesprocent på 240, og den er en antagelse. Alt i casen skalerer med den — byggeomkostninger, leje, salgssum og afkast — så kræver projektet nyt plangrundlag, er både tidsplan og udnyttelse usikre. Det er den største enkeltrisiko.",
         "udkast": true
       },
       {
-        "tekst": "Byggepriser: bliver byggeriet dyrere end forudsat, spiser det af gevinsten. Se Følsomhed-fanen for effekten.",
+        "tekst": "Byggeprisen. Håndværkerudgiften er den største enkeltpost: ca. 47 mio. kr. af en samlet kapitalindsats på ca. 109 mio. kr. Oven i lægges byggeplads, rådgivere, uforudsete og 25 % moms, som ikke kan fradrages. Én ekstra krone i håndværkerudgift bliver derfor til ca. 1,68 kr. på den samlede kapitalindsats.",
         "udkast": true
       },
       {
-        "tekst": "Renter og salgspriser: højere rente gør lånet dyrere, og lavere boligpriser giver mindre ved salg.",
+        "tekst": "Salgsprisen ved exit. Ved 98.500 kr/m² og stykvis salg giver projektet overskud, og der er afstand ned til break-even omkring 52.500 kr/m². Men afkastet ligger i salget: vælges samlet salg til 3,75 % cap rate eller fortsat drift i stedet, er resultatet negativt med udgangsforudsætningerne.",
+        "udkast": true
+      },
+      {
+        "tekst": "Renten og bankens nøgletal. DSCR — driftsoverskuddet i forhold til den årlige renteudgift — er 1,11 med udgangsforudsætningerne, hvor banker typisk kræver 1,2 og opefter. Stiger renten, eller falder lejen, kommer nøgletallet under 1, og renterne skal så betales af andet end driften.",
+        "udkast": true
+      },
+      {
+        "tekst": "Udlejningen. Lejen på 2.100 kr/m²/år svarer til ca. 15.000 kr. om måneden for en bolig på 86 m². Break-even-lejen — den leje, der skal til, før ejendommens værdi ved 3,75 % cap rate matcher kapitalindsatsen — er ca. 2.630 kr/m²/år. Driften bærer altså ikke projektet ved den forudsatte leje, og længere tomgang eller lavere leje øger afhængigheden af salget.",
+        "udkast": true
+      }
+    ]
+  },
+  "ordforklaring": {
+    "titel": "Ordforklaring",
+    "afsnit": [
+      {
+        "tekst": "NOI (driftsoverskud) — lejeindtægten efter tomgang og driftsomkostninger, men før renter, afdrag og skat. Det er tallet, både værdiansættelsen og bankens nøgletal regnes ud fra.",
+        "udkast": true
+      },
+      {
+        "tekst": "Yield on cost — NOI i forhold til den samlede kapitalindsats. Altså hvad ejendommen forrenter, når den er bygget færdig og lejet ud.",
+        "udkast": true
+      },
+      {
+        "tekst": "Cap rate — det afkastkrav, en investor køber til. Ejendomsværdien er NOI divideret med cap raten, så en lavere cap rate giver en højere værdi.",
+        "udkast": true
+      },
+      {
+        "tekst": "Cap rate spread — forskellen mellem yield on cost og cap rate, målt i procentpoint. Er den positiv, er ejendommen mere værd, end den koster at opføre; er den negativ, er den ikke.",
+        "udkast": true
+      },
+      {
+        "tekst": "DSCR — driftsoverskuddet divideret med årets ydelse på lånet. Under 1 betyder, at driften ikke kan betale ydelsen.",
+        "udkast": true
+      },
+      {
+        "tekst": "LTV og LTC — lånets størrelse i forhold til henholdsvis ejendommens værdi og projektets samlede omkostning.",
+        "udkast": true
+      },
+      {
+        "tekst": "Afdragsfrit lån — der betales kun renter undervejs, og hovedstolen indfries ved salg. Det holder den løbende ydelse nede, men nedbringer ikke gælden.",
+        "udkast": true
+      },
+      {
+        "tekst": "Equity multiple — hvor mange gange egenkapitalen kommer tilbage i alt. 2,0x betyder, at 10 mio. kr. indskudt bliver til 20 mio. kr. udbetalt.",
+        "udkast": true
+      },
+      {
+        "tekst": "CAGR — det årlige afkast, som det samlede afkast svarer til, når det fordeles jævnt over årene. Metoden tager ikke højde for, hvornår pengene kommer ind, og er derfor ikke det samme som IRR.",
+        "udkast": true
+      },
+      {
+        "tekst": "Stykvis salg — boligerne udstykkes som ejerlejligheder og sælges enkeltvis til boligkøbere. Alternativet er samlet salg af hele ejendommen til én investor.",
+        "udkast": true
+      },
+      {
+        "tekst": "Bebyggelsesprocent — hvor stort et etageareal der må opføres, i procent af grundens areal. 240 % af 788 m² giver ca. 1.891 m².",
+        "udkast": true
+      },
+      {
+        "tekst": "Tomgang — den andel af lejen, der forventes at gå tabt, fordi boliger står tomme mellem lejere.",
+        "udkast": true
+      },
+      {
+        "tekst": "Uforudsete — en procentvis buffer oven på byggebudgettet til det, der endnu ikke er projekteret færdigt.",
         "udkast": true
       }
     ]
