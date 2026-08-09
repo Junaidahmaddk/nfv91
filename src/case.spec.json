@@ -1,100 +1,465 @@
 {
-  "slug": "case-template-demo",
-  "titel": "GKL 214 — Gammel Køge Landevej 214",
-  "kortTitel": "GKL 214",
-  "adresse": "Gammel Køge Landevej 214",
-  "postnrBy": "2500 Valby",
+  "slug": "nfv91",
+  "titel": "Nordre Fasanvej 91",
+  "kortTitel": "Nordre Fasanvej 91",
+  "adresse": "Nordre Fasanvej 91",
+  "postnrBy": "2000 Frederiksberg",
   "tagline": "Nedrivning → Nybyg → Fri markedsleje → Exit ved stykvis salg, samlet salg eller drift",
   "produkt": "Etageboliger (nybyg)",
-  "casetype": "erhverv_nybyg",
+  "casetype": "nedrivning_nybyg",
   "dato": "August 2026",
   "adgangskode": null,
   "model": {
     "landMode": "purchase",
     "opexMode": "perSqm",
     "debtMode": "singleIO",
-    "exitModes": ["sqm", "cap", "hold"],
+    "exitModes": [
+      "sqm",
+      "cap",
+      "hold"
+    ],
     "feeMode": "mgmtPrefCarry",
     "advokatDD": 150000
   },
   "defaults": {
-    "grundAreal": 1129,
-    "pp": 6500000,
-    "csqm": 21000,
-    "demo": 500000,
+    "grundAreal": 788,
+    "pp": 25000000,
+    "csqm": 25000,
+    "demo": 1900000,
     "bpPct": 10,
     "rdPct": 12,
     "tilsl": 900000,
     "ufPct": 10,
     "gebyr": 150000,
-    "bebygPct": 110,
-    "units": 14,
+    "bebygPct": 240,
+    "units": 22,
     "rent": 2100,
     "driftSqm": 425,
     "tomgang": 2,
-    "lejeStig": 2.0,
+    "lejeStig": 2,
     "tyrs": 5,
-    "spSqm": 52500,
-    "maeglerPct": 1.0,
+    "spSqm": 98500,
+    "maeglerPct": 1,
     "capRate": 3.75,
     "exitMode": "sqm",
     "realLtv": 75,
     "realRente": 4.5,
-    "bankFee": 1.0,
+    "bankFee": 1,
     "mgmtPct": 4,
     "prefPct": 25,
     "carryPct": 20,
     "projMdr": 36
   },
   "sliders": [
-    { "id": "pp", "label": "Købspris, grund", "min": 3000000, "max": 12000000, "step": 250000, "unit": "DKK", "gruppe": "overblik" },
-    { "id": "csqm", "label": "Håndværker (excl. moms)", "min": 14000, "max": 30000, "step": 500, "unit": "kr/m²", "gruppe": "overblik" },
-    { "id": "bebygPct", "label": "Bebyggelsesprocent", "min": 60, "max": 160, "step": 5, "unit": "%", "gruppe": "overblik" },
-    { "id": "units", "label": "Antal boliger", "min": 8, "max": 24, "step": 1, "unit": "stk.", "gruppe": "overblik" },
-    { "id": "rent", "label": "Fri markedsleje", "min": 1600, "max": 2800, "step": 50, "unit": "kr/m²/år", "gruppe": "overblik" },
-    { "id": "driftSqm", "label": "Driftsomkostninger", "min": 250, "max": 650, "step": 25, "unit": "kr/m²/år", "gruppe": "overblik" },
-    { "id": "tomgang", "label": "Tomgang", "min": 0, "max": 10, "step": 0.5, "unit": "%", "gruppe": "overblik" },
-    { "id": "lejeStig", "label": "Årlig lejestigning", "min": 0, "max": 5, "step": 0.25, "unit": "%", "gruppe": "overblik" },
-    { "id": "capRate", "label": "Cap rate (værdiansættelse)", "min": 2.5, "max": 6.0, "step": 0.25, "unit": "%", "gruppe": "overblik" },
-    { "id": "demo", "label": "Nedrivning (inkl. miljøsanering)", "min": 0, "max": 1500000, "step": 50000, "unit": "DKK", "gruppe": "byggedetaljer" },
-    { "id": "tilsl", "label": "Tilslutningsafg.", "min": 0, "max": 2000000, "step": 100000, "unit": "DKK", "gruppe": "byggedetaljer" },
-    { "id": "bpPct", "label": "Byggeplads", "min": 0, "max": 15, "step": 1, "unit": "%", "gruppe": "byggedetaljer" },
-    { "id": "rdPct", "label": "Rådgivere", "min": 0, "max": 18, "step": 1, "unit": "%", "gruppe": "byggedetaljer" },
-    { "id": "ufPct", "label": "Uforudsete", "min": 0, "max": 20, "step": 1, "unit": "%", "gruppe": "byggedetaljer" },
-    { "id": "realLtv", "label": "Realkredit-LTV (af ejendomsværdi)", "min": 0, "max": 80, "step": 5, "unit": "%", "gruppe": "finans" },
-    { "id": "realRente", "label": "Realkreditrente inkl. bidrag", "min": 2, "max": 8, "step": 0.25, "unit": "%", "gruppe": "finans" },
-    { "id": "bankFee", "label": "Stiftelsesomk.", "min": 0, "max": 3, "step": 0.25, "unit": "%", "gruppe": "finans" },
-    { "id": "tyrs", "label": "Exithorisont", "min": 0, "max": 15, "step": 1, "unit": "år", "gruppe": "exit" },
-    { "id": "spSqm", "label": "Salgspris (stykvis salg)", "min": 30000, "max": 70000, "step": 500, "unit": "kr/m²", "gruppe": "exit" },
-    { "id": "maeglerPct", "label": "Mægler ved salg", "min": 0, "max": 5, "step": 0.5, "unit": "%", "gruppe": "exit" }
+    {
+      "id": "pp",
+      "label": "Købspris, grund",
+      "min": 10000000,
+      "max": 40000000,
+      "step": 250000,
+      "unit": "DKK",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "csqm",
+      "label": "Håndværker (excl. moms)",
+      "min": 16500,
+      "max": 34000,
+      "step": 500,
+      "unit": "kr/m²",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "bebygPct",
+      "label": "Bebyggelsesprocent",
+      "min": 120,
+      "max": 360,
+      "step": 5,
+      "unit": "%",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "units",
+      "label": "Antal boliger",
+      "min": 11,
+      "max": 33,
+      "step": 1,
+      "unit": "stk.",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "rent",
+      "label": "Fri markedsleje",
+      "min": 1600,
+      "max": 2800,
+      "step": 50,
+      "unit": "kr/m²/år",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "driftSqm",
+      "label": "Driftsomkostninger",
+      "min": 250,
+      "max": 650,
+      "step": 25,
+      "unit": "kr/m²/år",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "tomgang",
+      "label": "Tomgang",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "%",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "lejeStig",
+      "label": "Årlig lejestigning",
+      "min": 0,
+      "max": 5,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "capRate",
+      "label": "Cap rate (værdiansættelse)",
+      "min": 2.5,
+      "max": 6,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "overblik"
+    },
+    {
+      "id": "demo",
+      "label": "Nedrivning (inkl. miljøsanering)",
+      "min": 0,
+      "max": 3800000,
+      "step": 50000,
+      "unit": "DKK",
+      "gruppe": "byggedetaljer"
+    },
+    {
+      "id": "tilsl",
+      "label": "Tilslutningsafg.",
+      "min": 0,
+      "max": 2000000,
+      "step": 100000,
+      "unit": "DKK",
+      "gruppe": "byggedetaljer"
+    },
+    {
+      "id": "bpPct",
+      "label": "Byggeplads",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "%",
+      "gruppe": "byggedetaljer"
+    },
+    {
+      "id": "rdPct",
+      "label": "Rådgivere",
+      "min": 0,
+      "max": 18,
+      "step": 1,
+      "unit": "%",
+      "gruppe": "byggedetaljer"
+    },
+    {
+      "id": "ufPct",
+      "label": "Uforudsete",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "gruppe": "byggedetaljer"
+    },
+    {
+      "id": "realLtv",
+      "label": "Realkredit-LTV (af ejendomsværdi)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "realRente",
+      "label": "Realkreditrente inkl. bidrag",
+      "min": 2,
+      "max": 8,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "bankFee",
+      "label": "Stiftelsesomk.",
+      "min": 0,
+      "max": 3,
+      "step": 0.25,
+      "unit": "%",
+      "gruppe": "finans"
+    },
+    {
+      "id": "tyrs",
+      "label": "Exithorisont",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "år",
+      "gruppe": "exit"
+    },
+    {
+      "id": "spSqm",
+      "label": "Salgspris (stykvis salg)",
+      "min": 59000,
+      "max": 138000,
+      "step": 500,
+      "unit": "kr/m²",
+      "gruppe": "exit"
+    },
+    {
+      "id": "maeglerPct",
+      "label": "Mægler ved salg",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "%",
+      "gruppe": "exit"
+    }
   ],
   "thresholds": {
-    "yoc": { "good": 0.05, "ok": 0.04 },
-    "dscr": { "good": 1.3, "ok": 1.0 },
-    "cagr": { "good": 0.05, "ok": 0 },
-    "cagrLev": { "good": 0.10, "ok": 0 },
-    "coc": { "good": 0.08, "ok": 0 },
-    "eqMult": { "good": 1.3, "ok": 1.0 }
+    "yoc": {
+      "good": 0.05,
+      "ok": 0.04
+    },
+    "dscr": {
+      "good": 1.3,
+      "ok": 1
+    },
+    "cagr": {
+      "good": 0.05,
+      "ok": 0
+    },
+    "cagrLev": {
+      "good": 0.1,
+      "ok": 0
+    },
+    "coc": {
+      "good": 0.08,
+      "ok": 0
+    },
+    "eqMult": {
+      "good": 1.3,
+      "ok": 1
+    }
   },
   "sensParams": [
-    { "id": "csqm", "label": "Byggepris (kr/m²)", "fmt": "kr", "values": [17000, 19000, 20000, 21000, 22000, 23000, 25000] },
-    { "id": "spSqm", "label": "Salgspris (kr/m²)", "fmt": "kr", "values": [40000, 45000, 50000, 52500, 55000, 60000, 65000] },
-    { "id": "rent", "label": "Leje (kr/m²/år)", "fmt": "kr", "values": [1700, 1850, 2000, 2100, 2200, 2350, 2500] },
-    { "id": "driftSqm", "label": "Driftsomk. (kr/m²/år)", "fmt": "kr", "values": [250, 300, 350, 425, 475, 525, 600] },
-    { "id": "capRate", "label": "Cap rate (%)", "fmt": "pctRaw", "values": [3.0, 3.25, 3.5, 3.75, 4.0, 4.5, 5.0] },
-    { "id": "pp", "label": "Købspris grund (DKK)", "fmt": "dkk", "values": [4000000, 5000000, 6000000, 6500000, 7000000, 8000000, 9000000] },
-    { "id": "realLtv", "label": "Realkredit-LTV (%)", "fmt": "pctRaw", "values": [0, 40, 50, 60, 70, 75, 80] },
-    { "id": "realRente", "label": "Realkreditrente (%)", "fmt": "pctRaw", "values": [3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0] },
-    { "id": "tyrs", "label": "Exithorisont (år)", "fmt": "aar", "values": [3, 4, 5, 6, 8, 10, 12] },
-    { "id": "tomgang", "label": "Tomgang (%)", "fmt": "pctRaw", "values": [0, 1, 2, 4, 6, 8, 10] },
-    { "id": "bebygPct", "label": "Bebyggelsesprocent", "fmt": "pctRaw", "values": [80, 90, 100, 110, 120, 140, 160] }
+    {
+      "id": "csqm",
+      "label": "Byggepris (kr/m²)",
+      "fmt": "kr",
+      "values": [
+        19000,
+        21000,
+        23000,
+        25000,
+        27000,
+        29000,
+        31000
+      ]
+    },
+    {
+      "id": "spSqm",
+      "label": "Salgspris (kr/m²)",
+      "fmt": "kr",
+      "values": [
+        75000,
+        82500,
+        90000,
+        97500,
+        105000,
+        112500,
+        120000
+      ]
+    },
+    {
+      "id": "rent",
+      "label": "Leje (kr/m²/år)",
+      "fmt": "kr",
+      "values": [
+        1700,
+        1850,
+        2000,
+        2100,
+        2200,
+        2350,
+        2500
+      ]
+    },
+    {
+      "id": "driftSqm",
+      "label": "Driftsomk. (kr/m²/år)",
+      "fmt": "kr",
+      "values": [
+        250,
+        300,
+        350,
+        425,
+        475,
+        525,
+        600
+      ]
+    },
+    {
+      "id": "capRate",
+      "label": "Cap rate (%)",
+      "fmt": "pctRaw",
+      "values": [
+        3,
+        3.25,
+        3.5,
+        3.75,
+        4,
+        4.5,
+        5
+      ]
+    },
+    {
+      "id": "pp",
+      "label": "Købspris grund (DKK)",
+      "fmt": "dkk",
+      "values": [
+        19000000,
+        21000000,
+        23000000,
+        25000000,
+        27000000,
+        29000000,
+        31000000
+      ]
+    },
+    {
+      "id": "realLtv",
+      "label": "Realkredit-LTV (%)",
+      "fmt": "pctRaw",
+      "values": [
+        0,
+        40,
+        50,
+        60,
+        70,
+        75,
+        80
+      ]
+    },
+    {
+      "id": "realRente",
+      "label": "Realkreditrente (%)",
+      "fmt": "pctRaw",
+      "values": [
+        3,
+        3.5,
+        4,
+        4.5,
+        5,
+        5.5,
+        6
+      ]
+    },
+    {
+      "id": "tyrs",
+      "label": "Exithorisont (år)",
+      "fmt": "aar",
+      "values": [
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12
+      ]
+    },
+    {
+      "id": "tomgang",
+      "label": "Tomgang (%)",
+      "fmt": "pctRaw",
+      "values": [
+        0,
+        1,
+        2,
+        4,
+        6,
+        8,
+        10
+      ]
+    },
+    {
+      "id": "bebygPct",
+      "label": "Bebyggelsesprocent",
+      "fmt": "pctRaw",
+      "values": [
+        180,
+        200,
+        220,
+        240,
+        260,
+        280,
+        300
+      ]
+    }
   ],
   "sensMetrics": [
-    { "id": "cagrLev", "label": "Årligt afkast (CAGR, eft. renter)", "fmt": "pct", "good": 0.15, "ok": 0.05 },
-    { "id": "cagr", "label": "Årligt afkast (CAGR, ulev.)", "fmt": "pct", "good": 0.08, "ok": 0.04 },
-    { "id": "totalRetLev", "label": "Profit eft. renter (DKK)", "fmt": "dkk", "good": 5000000, "ok": 0 },
-    { "id": "eqMultLev", "label": "Equity Multiple", "fmt": "x", "good": 1.3, "ok": 1.0 },
-    { "id": "yoc", "label": "Yield on Cost", "fmt": "pct", "good": 0.05, "ok": 0.04 },
-    { "id": "dscr", "label": "DSCR", "fmt": "x", "good": 1.3, "ok": 1.0 }
-  ]
+    {
+      "id": "cagrLev",
+      "label": "Årligt afkast (CAGR, eft. renter)",
+      "fmt": "pct",
+      "good": 0.15,
+      "ok": 0.05
+    },
+    {
+      "id": "cagr",
+      "label": "Årligt afkast (CAGR, ulev.)",
+      "fmt": "pct",
+      "good": 0.08,
+      "ok": 0.04
+    },
+    {
+      "id": "totalRetLev",
+      "label": "Profit eft. renter (DKK)",
+      "fmt": "dkk",
+      "good": 5000000,
+      "ok": 0
+    },
+    {
+      "id": "eqMultLev",
+      "label": "Equity Multiple",
+      "fmt": "x",
+      "good": 1.3,
+      "ok": 1
+    },
+    {
+      "id": "yoc",
+      "label": "Yield on Cost",
+      "fmt": "pct",
+      "good": 0.05,
+      "ok": 0.04
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "fmt": "x",
+      "good": 1.3,
+      "ok": 1
+    }
+  ],
+  "grundlag": {
+    "beregningId": 5,
+    "parameterVersion": "2026.1"
+  }
 }
