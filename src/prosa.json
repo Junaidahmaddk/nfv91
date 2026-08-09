@@ -15,7 +15,7 @@
         "udkast": true
       },
       {
-        "tekst": "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån, byggekredit og realkredit ved stabiliseret drift. De første tre år har projektet ingen lejeindtægt, men bærer renter — ca. 4,3 mio. kr. i alt. Det er en reel omkostning, som modellen nu regner med. Alle tal på siden beregnes live, og de fire vigtigste forudsætninger kan trækkes direkte her på siden under «Regn selv». Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. «Myndighedsscenarier» nedenfor viser casen ved andre udfald af plangrundlaget.",
+        "tekst": "Finansieringen er delt i tre faser med hver sin gældstype: grundkøbslån, byggekredit og realkredit ved stabiliseret drift. De første tre år har projektet ingen lejeindtægt, men bærer renter — ca. 4,3 mio. kr. i alt. Det er en reel omkostning, som modellen nu regner med. Alle tal på siden beregnes live, og de fire vigtigste forudsætninger kan trækkes direkte her på siden under «Regn selv». Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. «Myndighedsscenarier» nedenfor viser casen ved andre udfald af plangrundlaget. Tallene på siden er opgjort på projektniveau, altså før Fairhomes' honorar og carry; hvad ejerkredsen sidder tilbage med, står på Fee-struktur-fanen.",
         "udkast": true
       }
     ]
@@ -188,7 +188,7 @@
         "udkast": true
       },
       {
-        "tekst": "Development & management fee — Fairhomes' honorar for at udvikle og styre projektet, opgjort som en procentsats p.a. af projektsummen over projektperioden. Finansierings-fee'et er et engangshonorar af lånesummen og er momsfrit.",
+        "tekst": "20/2-modellen — Fairhomes' honorarstruktur: 2 % p.a. i development- og management-fee af projektsummen (plus moms), faktureret månedligt over projektperioden, og 20 % carry af nettoprovenuet. De to dele gør ikke det samme: fee'en betaler for at drive projektet undervejs og løber, uanset hvordan det går, mens carry'en først udløses, hvis der er et overskud at dele.",
         "udkast": true
       },
       {
@@ -213,6 +213,14 @@
       },
       {
         "tekst": "Bunden egenkapital — den del af den indskudte kapital, der stadig står i projektet efter refinansieringen. Toppen er derimod det maksimale beløb, ejerkredsen skal kunne stille undervejs, og den falder ikke af en cash-out.",
+        "udkast": true
+      },
+      {
+        "tekst": "Carry — den andel af overskuddet, udvikleren får, når investorerne har fået deres penge tilbage. Grundlaget her er det, egenkapitalen tjener efter renter, efter honorarer og efter at de oprindelige ejere har fået deres indskud retur. Er der ingen gevinst, er der ingen carry.",
+        "udkast": true
+      },
+      {
+        "tekst": "Pref (forlodsafkast) — et afkast, investorerne kan få forlods, før udvikleren tager carry. Casen regner uden pref, så hele overskuddet indgår i carry-grundlaget; sættes der en pref, skrumper det grundlag tilsvarende.",
         "udkast": true
       }
     ]

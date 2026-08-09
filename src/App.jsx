@@ -945,6 +945,55 @@ export default function App() {
       </>;
       })()}
 
+      {tab === "fees" && m.fees && m.fees.mode === "devAndCarry" && (function() {
+        var F = m.fees;
+        return <>
+        <TabIntro>{"Fairhomes' honorar efter 20/2-modellen: " + P.devPctYr + " % p.a. i development- og management-fee af projektsummen (+ moms), faktureret månedligt over " + P.projMdr + " mdr., og " + P.carryPct + " % carry af nettoprovenuet. Carry'en ligger på det, egenkapitalen tjener efter renter, efter honorarer og efter at de oprindelige ejere har fået deres kapital tilbage" + (P.prefPct > 0 ? " og et forlodsafkast på " + P.prefPct + " %" : "") + "."}</TabIntro>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
+          <Kp label={"Dev/mgmt fee (" + P.devPctYr + " % p.a.)"} value={f(F.devInkl)} sub={"inkl. moms · " + fK(Math.round(F.devMdrInkl)) + " kr/mdr"} />
+          <Kp label={"Carry (" + P.carryPct + " %)"} value={f(F.carry)} sub={"af nettoprovenu " + f(F.nettoprovenu)} />
+          <Kp label="Fairhomes i alt" value={f(F.jwgIalt)} sub={F.bruttoprovenu > 0 ? fP(F.jwgIalt / F.bruttoprovenu) + " af bruttoprovenuet" : "—"} color={GD} />
+          <Kp label="Ejerne beholder" value={f(F.ejerProfit)} sub={fP(F.ejerAndel) + " af nettoprovenuet"} color={GR} />
+        </div>
+        {slGruppe("fees").length > 0 && <Sec title="Fee-parametre" sub="Satser, pref og projektperiode — alle beløb nedenfor følger med">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0 16px" }}>
+            {renderSliders(slGruppe("fees"))}
+          </div>
+        </Sec>}
+        <Sec title="Fee-opgørelse & waterfall" sub={"Projektsum: " + f(F.projSum)}>
+          <Crd>
+            <Hd text={"DEVELOPMENT & MANAGEMENT FEE — " + P.devPctYr + " % P.A."} />
+            <DR label={"Dev. & mgmt (" + P.devPctYr + " % p.a. × " + (P.projMdr / 12).toFixed(1) + " år af projektsummen)"} value={f(F.devFee)} />
+            <DR label="   + moms 25 %" value={f(F.devMoms)} bg={LT} />
+            <DR label="   = Inkl. moms" value={f(F.devInkl)} bold />
+            <DR label="Pr. måned (inkl. moms)" value={fK(Math.round(F.devMdrInkl)) + " DKK"} bg={LT} />
+            {F.finFee > 0 && <DR label={"Finansierings-fee (" + P.finFeePct + " % af lånesum, momsfri)"} value={f(F.finFee)} />}
+            <div style={{ height: 8 }} />
+            <Hd text={"WATERFALL VED EXIT — EJERNE FÅR KAPITALEN TILBAGE FØRST"} bg="rgba(34,197,94,0.25)" />
+            <DR label="Provenu til egenkapitalen (efter renter og efter tilbagebetalt kapital)" value={f(F.bruttoprovenu)} />
+            <DR label="   − Fairhomes' honorarer (projektomkostning)" value={"−" + f(F.devInkl + F.finFee)} bg={LT} />
+            <DR label="   = Nettoprovenu til fordeling" value={f(F.nettoprovenu)} bold />
+            {P.prefPct > 0 && <DR label={"1. prioritet — ejerne: forlodsafkast " + P.prefPct + " % af " + f(m.eqBrutto || m.equityTotal)} value={f(F.prefBetalt)} bg={LT} />}
+            <DR label={"Fairhomes carry — " + P.carryPct + " % af " + f(F.carryBase)} value={f(F.carry)} bg={P.prefPct > 0 ? undefined : LT} />
+            <DR label={"Ejerne — resten (" + (100 - P.carryPct) + " % af " + f(F.carryBase) + ")"} value={f(F.carryBase - F.carry)} />
+            <TotR left="Ejerne — profit i alt" right={f(F.ejerProfit)} bg={GR} />
+            <TotR left="Fairhomes i alt (fee + carry)" right={f(F.jwgIalt)} bg="rgba(212,197,169,0.25)" />
+          </Crd>
+        </Sec>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 12, marginBottom: 12 }}>
+          <Kp label="Ejernes multiple efter carry" value={F.ejerMultiple.toFixed(2) + "x"} sub={"projektets: " + m.eqMultLev.toFixed(2) + "x"} color={GR} />
+          <Kp label="Ejernes profit pr. bolig" value={f(F.ejerProfit / units)} sub={units + " boliger"} />
+          <Kp label="Fairhomes' andel af overskuddet" value={F.bruttoprovenu > 0 ? fP(F.jwgIalt / F.bruttoprovenu) : "—"} sub="fee + carry / provenu til EK" color={GD} />
+        </div>
+        <Note>
+          Carry-grundlaget er det, egenkapitalen tjener <b>efter</b> renter, <b>efter</b> honorarer og <b>efter</b> at de oprindelige ejere har fået deres indskud tilbage
+          {P.prefPct > 0 ? " og et forlodsafkast på " + P.prefPct + " %" : " — der er ikke sat et forlodsafkast (pref), så hele overskuddet indgår"}.
+          Giver projektet underskud, er carry'en nul. Nøgletallene på de øvrige faner er opgjort på projektniveau, altså før carry; ejernes eget afkast efter carry står ovenfor.
+          Struktur og satser aftales konkret pr. projekt.
+        </Note>
+      </>;
+      })()}
+
       {tab === "fees" && m.fees && m.fees.mode === "devAndFin" && (function() {
         var F = m.fees;
         return <>
