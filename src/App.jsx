@@ -23,6 +23,8 @@ const BASE = import.meta.env.BASE_URL; // relative asset-stier (GitHub Pages-und
 const API_STATE = "https://lgv2628.vercel.app/api/state";
 const GRID = "rgba(232,220,196,0.1)";
 const REFL = "rgba(232,220,196,0.3)";
+// de forudsætninger, casen er mest følsom over for — vises som calculator på memo-fanen
+const MEMO_SLIDERS = ["pp", "csqm", "spSqm", "rent"];
 
 // ── delt lagring: /api/state (Vercel Blob) med localStorage som fallback ──
 async function remoteGet() {
@@ -87,6 +89,60 @@ function ProsaSec({ sektion, sub }) {
           );
         })}
       </div>
+    </Sec>
+  );
+}
+
+// myndighedsscenarier: samme case regnet igennem ved forskellige udfald af
+// plangrundlaget. Rene regneeksempler — spec.myndighedsscenarier, ikke rammer.
+function Myndighed({ P, m }) {
+  var scen = spec.myndighedsscenarier || [];
+  if (!scen.length) return null;
+  var auBase = m.AREA / P.units; // hold gennemsnitsboligen konstant på tværs af scenarier
+  var rows = scen.map(function(sc) {
+    var area = Math.round(P.grundAreal * sc.bebygPct / 100);
+    var units = Math.max(1, Math.round(area / auBase));
+    var r = calcModel(Object.assign({}, P, { bebygPct: sc.bebygPct, units: units }), spec);
+    return { sc: sc, area: r.AREA, units: units, r: r, aktiv: sc.bebygPct === P.bebygPct };
+  });
+  var th = { background: "rgba(232,220,196,0.12)", padding: "7px 8px", whiteSpace: "nowrap" };
+  return (
+    <Sec title="Myndighedsscenarier" sub="Samme case regnet igennem, hvis kommunen lander et andet sted på udnyttelsen">
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11.5, color: BL }}>
+          <thead><tr>
+            <th style={Object.assign({ textAlign: "left" }, th)}>Scenarie</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Bebyg.%</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Etageareal</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Boliger</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Yield on cost</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Profit eft. renter</th>
+            <th style={Object.assign({ textAlign: "right" }, th)}>Årligt afkast</th>
+          </tr></thead>
+          <tbody>
+            {rows.map(function(row, i) {
+              var td = { padding: "6px 8px", textAlign: "right", background: row.aktiv ? "rgba(245,158,11,0.15)" : i % 2 ? LT : "transparent", fontWeight: row.aktiv ? 700 : 400, fontVariantNumeric: "tabular-nums" };
+              return <tr key={i}>
+                <td style={Object.assign({}, td, { textAlign: "left" })}>
+                  {row.sc.navn}{row.aktiv ? " •" : ""}
+                  {row.sc.note ? <div style={{ fontSize: 10, color: GY, fontWeight: 400 }}>{row.sc.note}</div> : null}
+                </td>
+                <td style={td}>{row.sc.bebygPct} %</td>
+                <td style={td}>{fK(row.area)} m²</td>
+                <td style={td}>{row.units} stk.</td>
+                <td style={Object.assign({}, td, { color: row.r.yoc >= 0.05 ? GR : row.r.yoc >= 0.04 ? BL : RD })}>{fP(row.r.yoc)}</td>
+                <td style={Object.assign({}, td, { color: row.r.totalRetLev > 0 ? GR : RD })}>{f(row.r.totalRetLev)}</td>
+                <td style={Object.assign({}, td, { color: row.r.cagrLev > 0 ? GR : RD })}>{fP(row.r.cagrLev)}</td>
+              </tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <Note>
+        Regneeksempler, ikke plangrundlag — ingen af scenarierne er bekræftet af kommunen.
+        Boligstørrelsen holdes fast på ca. {Math.round(auBase)} m², så antallet af boliger følger etagearealet.
+        Øvrige forudsætninger er som valgt på de andre faner. • markerer det scenarie, casen står på nu.
+      </Note>
     </Sec>
   );
 }
@@ -371,6 +427,27 @@ export default function App() {
           <Kp label="Forventet gevinst" value={f(m.totalRetLev)} sub={"over ca. " + tyrs + " år — efter renter"} color={retLC} />
         </div>
 
+        {/* calculator: de fire tal casen er mest følsom over for, direkte på memo-fanen */}
+        <Sec title="Regn selv" sub="Træk i de fire forudsætninger, casen er mest følsom over for — alle tal på siden opdateres med det samme">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
+            {renderSliders(MEMO_SLIDERS.map(function(id) {
+              return (spec.sliders || []).find(function(sl) { return sl.id === id; });
+            }).filter(Boolean))}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginTop: 12 }}>
+            <Kp label="Yield on cost" value={fP(m.yoc)} sub="NOI / samlet kapital" color={yocC} />
+            <Kp label="Årligt afkast (CAGR)" value={fP(m.cagrLev)} sub="efter renter" color={levC} />
+            <Kp label="Equity Multiple" value={m.eqMultLev.toFixed(2) + "x"} sub="af egenkapital" color={eqMC} />
+            <Kp label="Profit pr. bolig" value={f(m.totalRetLev / units)} sub={units + " boliger à ~" + Math.round(AU) + " m²"} color={retLC} />
+          </div>
+          <Note>
+            Alle øvrige forudsætninger ligger på fanerne Overblik, Drift, Finansiering og Exit/Salg.
+            Tryk <b>Gem</b> for at dele de valgte tal på tværs af enheder, eller <b>Nulstil</b> for at gå tilbage til casens udgangspunkt.
+          </Note>
+        </Sec>
+
+        <Myndighed P={P} m={m} />
+
         {/* ortofoto + skråfotos — hver celle skjules, hvis filen mangler */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 8 }}>
           <Billede src="ortofoto.jpg" alt="Ortofoto af ejendommen" caption="Ortofoto — ejendommen set fra oven" />
@@ -593,6 +670,10 @@ export default function App() {
             </>}
             <DR label="Driftsomk. i alt" value={f(-m.dT)} bold bg={LT} />
             <TotR left="NOI" right={f(m.noi) + "/år"} bg={GR} />
+            {slGruppe("drift").length > 0 && <div style={{ padding: "14px 14px 4px", borderTop: "1px solid " + CB }}>
+              <div style={{ fontSize: 10, letterSpacing: 1.5, color: GY, marginBottom: 8, fontWeight: 600 }}>DRIFTSPARAMETRE</div>
+              {renderSliders(slGruppe("drift"))}
+            </div>}
           </Crd>
           <div>
             <div style={{ background: "rgba(54,120,120,0.18)", border: "1px solid rgba(54,120,120,0.45)", borderRadius: 8, padding: "10px 14px", fontSize: 11.5, color: "rgba(232,220,196,0.85)", lineHeight: 1.6, marginBottom: 16 }}>
@@ -799,6 +880,11 @@ export default function App() {
           <Kp label="Fin. fee (momsfri)" value={f(F.finFee)} sub={P.finFeePct + "% af " + f(m.loanAmt)} />
           <Kp label="Total fees" value={f(F.totalFees)} sub={fP(F.totalFees / F.projSum) + " af projektsum"} color={GD} />
         </div>
+        {slGruppe("fees").length > 0 && <Sec title="Fee-parametre" sub="Satser og projektperiode — alle beløb nedenfor følger med">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0 16px" }}>
+            {renderSliders(slGruppe("fees"))}
+          </div>
+        </Sec>}
         <Sec title="Fee-opgørelse" sub={"Projektsum: " + f(F.projSum)}>
           <Crd>
             <Hd text="DEVELOPMENT & MANAGEMENT FEE" />

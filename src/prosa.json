@@ -11,11 +11,11 @@
         "udkast": true
       },
       {
-        "tekst": "Afkastet ligger i salget, ikke i driften. Driftsoverskuddet (NOI) er ca. 3,1 mio. kr. i år 1, hvilket giver et yield on cost på 2,8 % — lavere end den cap rate på 3,75 %, ejendommen værdiansættes til. Målt som investeringsejendom er projektet altså mindre værd, end det koster at opføre, og det er forskellen mellem ejerboligprisen ved stykvis salg og investorværdien, der bærer casen. De to øvrige exit-metoder giver negativt resultat med udgangsforudsætningerne.",
+        "tekst": "Afkastet ligger i salget, ikke i driften. Driftsoverskuddet (NOI) er ca. 3,24 mio. kr. i år 1, hvilket giver et yield on cost på 2,98 % — lavere end den cap rate på 3,75 %, ejendommen værdiansættes til. Målt som investeringsejendom er projektet ca. 22,4 mio. kr. mindre værd, end det koster at opføre, og det er forskellen mellem ejerboligprisen ved stykvis salg og investorværdien, der bærer casen. De to øvrige exit-metoder giver negativt resultat med udgangsforudsætningerne.",
         "udkast": true
       },
       {
-        "tekst": "Alle tal på siden beregnes live ud fra forudsætningerne på de øvrige faner. Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. Exit-metoden skiftes på fanen Exit/Salg, og Følsomhed-fanen viser, hvor meget de enkelte forudsætninger flytter afkastet.",
+        "tekst": "Alle tal på siden beregnes live ud fra forudsætningerne på de øvrige faner, og de fire vigtigste kan trækkes direkte her på siden under «Regn selv». Beregningerne er før skat og forudsætter, at momsen på byggeriet ikke kan fradrages. Exit-metoden skiftes på fanen Exit/Salg, «Myndighedsscenarier» nedenfor viser casen ved andre udfald af plangrundlaget, og Følsomhed-fanen sætter to forudsætninger op mod hinanden ad gangen.",
         "udkast": true
       }
     ]
@@ -28,11 +28,11 @@
         "udkast": true
       },
       {
-        "tekst": "Modellen regner med en projektperiode på 36 måneder — den periode, management fee'et faktureres over — og en exithorisont på 5 år. Ved stykvis salg fordeles salget jævnt over exithorisonten, så de sidste boliger afhændes i det sidste år; ved samlet salg sker hele afhændelsen i exitåret.",
+        "tekst": "Finansieringen er to-faset: et byggelån på 65 % af projektsummen løber afdragsfrit i de første 3 år og refinansieres derefter til realkredit. Projektperioden er sat til 36 måneder — den periode, development- og finansierings-fee faktureres over — og exithorisonten er 5 år. Ved stykvis salg fordeles salget jævnt over exithorisonten, så de sidste boliger afhændes i det sidste år; ved samlet salg sker hele afhændelsen i exitåret.",
         "udkast": true
       },
       {
-        "tekst": "Modellen regner i hele år med år 0 som første driftsår. Byggeperiodens likviditet og renter indgår derfor ikke som en selvstændig fase i cashflowet, og en forsinkelse i byggeriet vil i praksis skubbe både lejeindtægter og salgsprovenu.",
+        "tekst": "Modellen regner i hele år med år 0 som første driftsår. Byggelånets afdragsfrie fase er modelleret, men der er ikke en byggeperiode uden lejeindtægt: år 0 bærer både fuld leje og fuld renteudgift. En forsinkelse i byggeriet vil i praksis skubbe både lejeindtægter og salgsprovenu.",
         "udkast": true
       }
     ]
@@ -45,7 +45,7 @@
         "udkast": true
       },
       {
-        "tekst": "De tre tal er ikke uafhængige, og forskellen mellem dem er hele forretningen. En leje på 2.100 kr/m²/år svarer til et driftsoverskud på ca. 1.630 kr/m²/år. Kapitaliseret ved 3,75 % giver det en investorværdi omkring 43.500 kr/m² mod 98.500 kr/m² ved stykvis salg til ejerboligkøbere. Ejerboligmarkedet prisfastsætter altså kvadratmeteren mere end dobbelt så højt som investormarkedet, og det er den forskel, projektet henter.",
+        "tekst": "De tre tal er ikke uafhængige, og forskellen mellem dem er hele forretningen. En leje på 2.100 kr/m²/år svarer til et driftsoverskud på ca. 1.710 kr/m²/år. Kapitaliseret ved 3,75 % giver det en investorværdi omkring 45.600 kr/m² mod 98.500 kr/m² ved stykvis salg til ejerboligkøbere. Ejerboligmarkedet prisfastsætter altså kvadratmeteren mere end dobbelt så højt som investormarkedet, og det er den forskel, projektet henter.",
         "udkast": true
       },
       {
@@ -70,7 +70,7 @@
         "udkast": true
       },
       {
-        "tekst": "Modelforenklinger: der regnes i hele år fra år 0, byggeperioden indgår ikke som en selvstændig fase, og teksterne på siden er skrevet til udgangsforudsætningerne. Er sliderne flyttet og gemt, kan tallene i graferne afvige fra dem, der nævnes i teksten.",
+        "tekst": "Modelforenklinger: der regnes i hele år fra år 0, og selv om byggelånets afdragsfrie fase er modelleret, er der ingen byggeperiode uden lejeindtægt. De faste driftsposter — grundskyld og forsikring — er sat ud fra satser pr. m² etageareal fra en sammenlignelig case på samme vej og er ikke hentet fra ejendommens egne opgørelser. Teksterne er skrevet til udgangsforudsætningerne; er sliderne flyttet og gemt, kan tallene i graferne afvige fra dem, der nævnes her.",
         "udkast": true
       },
       {
@@ -87,19 +87,23 @@
         "udkast": true
       },
       {
+        "tekst": "Hvad en reduktion koster. Myndighedsscenarierne på memo-fanen regner casen igennem ved 160, 200, 240 og 280 % bebyggelse med samme gennemsnitlige boligstørrelse. De er regneeksempler, ikke rammer — ingen af dem er bekræftet af kommunen — men de viser, hvor hurtigt afkastet flytter sig, når udnyttelsen gør.",
+        "udkast": true
+      },
+      {
         "tekst": "Byggeprisen. Håndværkerudgiften er den største enkeltpost: ca. 47 mio. kr. af en samlet kapitalindsats på ca. 109 mio. kr. Oven i lægges byggeplads, rådgivere, uforudsete og 25 % moms, som ikke kan fradrages. Én ekstra krone i håndværkerudgift bliver derfor til ca. 1,68 kr. på den samlede kapitalindsats.",
         "udkast": true
       },
       {
-        "tekst": "Salgsprisen ved exit. Ved 98.500 kr/m² og stykvis salg giver projektet overskud, og der er afstand ned til break-even omkring 52.500 kr/m². Men afkastet ligger i salget: vælges samlet salg til 3,75 % cap rate eller fortsat drift i stedet, er resultatet negativt med udgangsforudsætningerne.",
+        "tekst": "Salgsprisen ved exit. Ved 98.500 kr/m² og stykvis salg giver projektet overskud, og der er afstand ned til break-even omkring 52.000 kr/m². Men afkastet ligger i salget: vælges samlet salg til 3,75 % cap rate eller fortsat drift i stedet, er resultatet negativt med udgangsforudsætningerne.",
         "udkast": true
       },
       {
-        "tekst": "Renten og bankens nøgletal. DSCR — driftsoverskuddet i forhold til den årlige renteudgift — er 1,11 med udgangsforudsætningerne, hvor banker typisk kræver 1,2 og opefter. Stiger renten, eller falder lejen, kommer nøgletallet under 1, og renterne skal så betales af andet end driften.",
+        "tekst": "Renten og bankens nøgletal. Byggelånet er dyrest i byggefasen: DSCR — driftsoverskuddet i forhold til den årlige ydelse — er 1,15 dér, mod 1,64 efter refinansieringen til realkredit. Banker kræver typisk 1,2 og opefter, så byggefasen ligger under normen fra start. Løftes lånet over 65 % af projektsummen, forrentes det overskydende som dyrere junior-tranche, og nøgletallet falder yderligere.",
         "udkast": true
       },
       {
-        "tekst": "Udlejningen. Lejen på 2.100 kr/m²/år svarer til ca. 15.000 kr. om måneden for en bolig på 86 m². Break-even-lejen — den leje, der skal til, før ejendommens værdi ved 3,75 % cap rate matcher kapitalindsatsen — er ca. 2.630 kr/m²/år. Driften bærer altså ikke projektet ved den forudsatte leje, og længere tomgang eller lavere leje øger afhængigheden af salget.",
+        "tekst": "Udlejningen. Lejen på 2.100 kr/m²/år svarer til ca. 15.000 kr. om måneden for en bolig på 86 m². Break-even-lejen — den leje, der skal til, før ejendommens værdi ved 3,75 % cap rate matcher kapitalindsatsen — er ca. 2.550 kr/m²/år. Driften bærer altså ikke projektet ved den forudsatte leje, og længere tomgang eller lavere leje øger afhængigheden af salget.",
         "udkast": true
       }
     ]
@@ -157,6 +161,22 @@
       },
       {
         "tekst": "Uforudsete — en procentvis buffer oven på byggebudgettet til det, der endnu ikke er projekteret færdigt.",
+        "udkast": true
+      },
+      {
+        "tekst": "Byggelån og LTC — byggeriet finansieres først med et byggelån målt som procent af projektsummen (LTC). Op til 65 % er senior-tranche til den lave rente; det, der ligger over, er junior-tranche og koster mere. Blandingen kaldes den blendede rente.",
+        "udkast": true
+      },
+      {
+        "tekst": "Refinansiering — når ejendommen er bygget og lejet ud, afløses byggelånet af et realkreditlån målt på ejendommens værdi (LTV). Rækker realkreditten ikke hele vejen, skal forskellen — refi-gap'et — dækkes af egenkapital.",
+        "udkast": true
+      },
+      {
+        "tekst": "Annuitet — et lån med fast årlig ydelse, hvor afdraget stiger og renten falder over løbetiden. Realkreditlånet efter refinansieringen er en annuitet; byggelånet er afdragsfrit.",
+        "udkast": true
+      },
+      {
+        "tekst": "Development & management fee — Fairhomes' honorar for at udvikle og styre projektet, opgjort som en procentsats p.a. af projektsummen over projektperioden. Finansierings-fee'et er et engangshonorar af lånesummen og er momsfrit.",
         "udkast": true
       }
     ]
