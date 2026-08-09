@@ -25,6 +25,10 @@
 //   feeMode:   "mgmtPrefCarry" — fast mgmt-fee % af totalCapital + 25% moms;
 //                                waterfall: ejer får pref (% af grund-EK) forlods,
 //                                derefter carry % af resten (LGV)
+//              "devAndCarry"   — JWG 20/2: devFee % p.a. + 25% moms + carry % af
+//                                nettoprovenuet til egenkapitalen efter honorar og efter
+//                                at de oprindelige ejere har fået deres kapital tilbage
+//                                (prefPct = valgfri hurdle, 0 = ingen)
 //              "devAndFin"     — devFee % p.a. × projMdr/12 af projektsum + 25% moms
 //                                + finansierings-fee % af lånesum, momsfri (NFV)
 //
@@ -509,7 +513,39 @@ export function calcModel(P, spec) {
   // ── FEES ──
   var fees;
   var projSum = totalCapital; // projektsum = kontant byg + grund (købt eller apport)
-  if (feeMode === "devAndFin") {
+  if (feeMode === "devAndCarry") {
+    // ── JWG 20/2: 2 % p.a. dev/mgmt-fee + 20 % carry af nettoprovenuet ──
+    // Carry'en ligger på det, egenkapitalen faktisk tjener (totalRetLev — altså EFTER
+    // renter og efter at de oprindelige ejere har fået deres kapital tilbage), og efter
+    // at honorarerne er betalt, da de er en projektomkostning. prefPct = 0 betyder ingen
+    // hurdle: så er grundlaget hele overskuddet, præcis som "20 % efter de oprindelige ejere".
+    var devYears2 = Q.projMdr / 12;
+    var devFee2 = projSum * Q.devPctYr / 100 * devYears2;
+    var devMoms2 = devFee2 * 0.25;
+    var devInkl2 = devFee2 + devMoms2;
+    var finFee2 = loanAmt * Q.finFeePct / 100; // momsfri
+    var nettoprovenu = totalRetLev - devInkl2 - finFee2;
+    var prefBeloeb = eqInvested * Q.prefPct / 100;      // 0 = ingen hurdle
+    var prefBetalt = Math.min(Math.max(nettoprovenu, 0), prefBeloeb);
+    var carryBase = Math.max(nettoprovenu - prefBetalt, 0);
+    var carry2 = carryBase * Q.carryPct / 100;
+    var ejerProfit2 = prefBetalt + (carryBase - carry2);
+    fees = {
+      mode: "devAndCarry", projSum: projSum,
+      devFee: devFee2, devMoms: devMoms2, devInkl: devInkl2,
+      devMdrInkl: Q.projMdr > 0 ? devInkl2 / Q.projMdr : 0,
+      finFee: finFee2, finMdr: Q.projMdr > 0 ? finFee2 / Q.projMdr : 0,
+      bruttoprovenu: totalRetLev, nettoprovenu: nettoprovenu,
+      prefBeloeb: prefBeloeb, prefBetalt: prefBetalt,
+      carryBase: carryBase, carry: carry2, carryPct: Q.carryPct,
+      ejerProfit: ejerProfit2,
+      ejerAndel: nettoprovenu > 0 ? ejerProfit2 / nettoprovenu : 0,
+      // ejernes afkast efter honorar og carry — det, investorkredsen reelt sidder tilbage med
+      ejerMultiple: eqInvested > 0 ? (ejerProfit2 + eqInvested) / eqInvested : 0,
+      jwgIalt: devInkl2 + finFee2 + carry2,
+      totalFees: devInkl2 + finFee2 + carry2,
+    };
+  } else if (feeMode === "devAndFin") {
     var devYears = Q.projMdr / 12;
     var devFee = projSum * Q.devPctYr / 100 * devYears;
     var devMoms = devFee * 0.25;

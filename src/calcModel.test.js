@@ -813,3 +813,81 @@ describe("(e) threePhase — cash-out ved refinansiering", () => {
     expect(two.rkLoan).toBeLessThanOrEqual(two.loanAmt); // stadig kappet ved gælden
   });
 });
+
+describe("(f) devAndCarry — JWG's 20/2-model", () => {
+  const SPEC_C = Object.assign({}, SPEC3, {
+    model: Object.assign({}, SPEC3.model, { feeMode: "devAndCarry" }),
+    defaults: Object.assign({}, SPEC3.defaults, { carryPct: 20, prefPct: 0, finFeePct: 0 })
+  });
+  const mc = (over) => calcModel(Object.assign({}, SPEC_C.defaults, over || {}), SPEC_C);
+
+  it("dev/mgmt-fee er % p.a. af projektsummen over projektperioden + moms", () => {
+    const m = mc(), F = m.fees;
+    expect(F.mode).toBe("devAndCarry");
+    expect(F.devFee).toBeCloseTo(m.totalCapital * 0.02 * 3, 2); // 2 % p.a. x 36 mdr.
+    expect(F.devMoms).toBeCloseTo(F.devFee * 0.25, 2);
+    expect(F.devInkl).toBeCloseTo(F.devFee * 1.25, 2);
+  });
+
+  it("nettoprovenuet er egenkapitalens afkast efter honorarer", () => {
+    const F = mc().fees;
+    expect(F.bruttoprovenu).toBeCloseTo(mc().totalRetLev, 2);
+    expect(F.nettoprovenu).toBeCloseTo(F.bruttoprovenu - F.devInkl - F.finFee, 2);
+  });
+
+  it("carry er 20 % af nettoprovenuet, når der ikke er pref", () => {
+    const F = mc().fees;
+    expect(F.prefBetalt).toBe(0);
+    expect(F.carryBase).toBeCloseTo(F.nettoprovenu, 2);
+    expect(F.carry).toBeCloseTo(F.nettoprovenu * 0.20, 2);
+    expect(F.ejerProfit).toBeCloseTo(F.nettoprovenu * 0.80, 2);
+    expect(F.ejerAndel).toBeCloseTo(0.80, 6);
+  });
+
+  it("carry og ejerandel går altid op i nettoprovenuet", () => {
+    for (const p of [0, 8, 15, 25]) {
+      const F = mc({ prefPct: p }).fees;
+      expect(F.carry + F.ejerProfit).toBeCloseTo(F.nettoprovenu, 2);
+    }
+  });
+
+  it("et forlodsafkast går til ejerne før carry og skrumper carry-grundlaget", () => {
+    const uden = mc({ prefPct: 0 }).fees, med = mc({ prefPct: 10 }).fees;
+    expect(med.prefBetalt).toBeGreaterThan(0);
+    expect(med.carryBase).toBeLessThan(uden.carryBase);
+    expect(med.carry).toBeLessThan(uden.carry);
+    expect(med.ejerProfit).toBeGreaterThan(uden.ejerProfit);
+  });
+
+  it("giver projektet underskud, er carry'en nul — og aldrig negativ", () => {
+    const m = mc({ spSqm: 30000 }); // salgspris langt under kostpris
+    expect(m.totalRetLev).toBeLessThan(0);
+    expect(m.fees.carry).toBe(0);
+    expect(m.fees.carryBase).toBe(0);
+  });
+
+  it("pref'en kan ikke udbetale mere, end der er provenu til", () => {
+    const F = mc({ spSqm: 55000, prefPct: 25 }).fees;
+    expect(F.prefBetalt).toBeLessThanOrEqual(Math.max(F.nettoprovenu, 0) + 1e-6);
+    expect(F.carry).toBeGreaterThanOrEqual(0);
+  });
+
+  it("Fairhomes i alt er fee + carry, og ejernes multiple ligger under projektets", () => {
+    const m = mc(), F = m.fees;
+    expect(F.jwgIalt).toBeCloseTo(F.devInkl + F.finFee + F.carry, 2);
+    expect(F.totalFees).toBeCloseTo(F.jwgIalt, 2);
+    expect(F.ejerMultiple).toBeLessThan(m.eqMultLev); // carry og fee koster ejerne afkast
+    expect(F.ejerMultiple).toBeGreaterThan(1);
+  });
+
+  it("højere carry-sats flytter penge fra ejerne til Fairhomes, krone for krone", () => {
+    const a = mc({ carryPct: 20 }).fees, b = mc({ carryPct: 30 }).fees;
+    expect(b.carry - a.carry).toBeCloseTo(a.ejerProfit - b.ejerProfit, 2);
+  });
+
+  it("de øvrige fee-modes er upåvirkede", () => {
+    const fin = calcModel({}, Object.assign({}, SPEC_C, { model: Object.assign({}, SPEC_C.model, { feeMode: "devAndFin" }) }));
+    expect(fin.fees.mode).toBe("devAndFin");
+    expect(fin.fees.carry).toBeUndefined();
+  });
+});
