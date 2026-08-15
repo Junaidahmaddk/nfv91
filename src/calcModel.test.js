@@ -891,3 +891,61 @@ describe("(f) devAndCarry — JWG's 20/2-model", () => {
     expect(fin.fees.carry).toBeUndefined();
   });
 });
+
+describe("(g) kapitaliserede for-omkostninger", () => {
+  const SPEC_K = Object.assign({}, SPEC3, {
+    model: Object.assign({}, SPEC3.model, { feeMode: "devAndCarry" }),
+    defaults: Object.assign({}, SPEC3.defaults, { carryPct: 20, prefPct: 0, finFeePct: 0, udvikOmk: 750000, konsulentOmk: 1250000 })
+  });
+  const mk = (over) => calcModel(Object.assign({}, SPEC_K.defaults, over || {}), SPEC_K);
+  const uden = () => mk({ udvikOmk: 0, konsulentOmk: 0 });
+
+  it("for-omkostningerne lægges i projektsummen med ikke-fradragsberettiget moms", () => {
+    const m = mk();
+    expect(m.preEx).toBe(2000000);
+    expect(m.preMoms).toBeCloseTo(500000, 2);
+    expect(m.preIn).toBeCloseTo(2500000, 2);
+    expect(m.pI).toBeCloseTo(uden().pI + m.preIn, 2);
+    expect(m.totalCapital).toBeCloseTo(m.pI, 2); // purchase-mode
+  });
+
+  it("LTC-grundlaget vokser, så byggekreditten og senior-tranchen bliver større", () => {
+    const m = mk(), u = uden();
+    expect(m.loanAmt).toBeCloseTo(u.loanAmt + m.preIn * 0.65, 2);
+    expect(m.seniorAmt).toBeGreaterThan(u.seniorAmt);
+    expect(m.loanAmt).toBeCloseTo(m.pI * 0.65, 2);
+  });
+
+  it("er posterne nul, er modellen identisk med før", () => {
+    const m = mk({ udvikOmk: 0, konsulentOmk: 0 });
+    expect(m.preIn).toBe(0);
+    expect(m.pI).toBeCloseTo(m.land + m.cIn, 2);
+  });
+
+  it("dev fee'en beregnes af den udvidede projektsum", () => {
+    expect(mk().fees.devFee).toBeGreaterThan(uden().fees.devFee);
+    expect(mk().fees.devFee).toBeCloseTo(mk().totalCapital * 0.02 * 3, 2);
+  });
+
+  it("binder refi-gap'et, æder det hele LTC-gevinsten — lånet vokser, men kapaciteten gør ikke", () => {
+    const m = mk(), u = uden();
+    expect(u.rkRefiGap).toBeGreaterThan(0);          // udgangstal: kapaciteten binder
+    expect(m.rkMaxLoan).toBeCloseTo(u.rkMaxLoan, 2); // værdien afhænger af NOI, ikke af omkostningen
+    expect(m.rkRefiGap - u.rkRefiGap).toBeCloseTo(m.loanAmt - u.loanAmt, 2);
+  });
+
+  it("har realkreditten luft, overlever gevinsten refinansieringen", () => {
+    const base = { rent: 2800, capRate: 3.0 };
+    const m = mk(base), u = mk(Object.assign({ udvikOmk: 0, konsulentOmk: 0 }, base));
+    expect(u.rkRefiGap).toBe(0);
+    expect(m.rkRefiGap).toBe(0);
+    // egenkapitalen stiger kun med den ikke-finansierede del (35 %) plus stiftelse
+    expect(m.eqBrutto - u.eqBrutto).toBeLessThan(m.preIn);
+    expect(m.eqBrutto - u.eqBrutto).toBeGreaterThan(m.preIn * 0.30);
+  });
+
+  it("de gamle goldens er upåvirkede — posterne findes ikke i deres defaults", () => {
+    const lgv = calcModel({}, { model: { landMode: "apport" }, defaults: { grundAreal: 100, grundVaerdi: 1e6, bebygPct: 100, units: 1, csqm: 20000, demo: 0, bpPct: 0, rdPct: 0, tilsl: 0, ufPct: 0, rent: 1000, driftSqm: 100, tomgang: 0, lejeStig: 0, tyrs: 1, spSqm: 50000, maeglerPct: 0, capRate: 4, realLtv: 50, realRente: 4, bankFee: 0, mgmtPct: 0, prefPct: 0, carryPct: 0, projMdr: 12 } });
+    expect(lgv.preIn).toBe(0);
+  });
+});

@@ -85,8 +85,19 @@ export function calcModel(P, spec) {
   var sub = Q.demo + hw + bp + rd + Q.tilsl + gebyr;
   var uf = sub * Q.ufPct / 100, cEx = sub + uf, moms = cEx * 0.25, cIn = cEx + moms;
 
+  // ── KAPITALISEREDE FOR-OMKOSTNINGER (før byggestart) ──
+  // Udviklings- og konsulentomkostninger afholdt fra køb til byggestart: projektledelse,
+  // myndighedsproces, arkitekt/ingeniør frem til tilladelse, landinspektør, miljø/geoteknik.
+  // De aktiveres i projektsummen, så banken ser dem som project cost — det udvider LTC-
+  // grundlaget og dermed også senior-tranchen. Rådgivning UNDER byggeriet ligger fortsat i
+  // rdPct af håndværkerudgiften; posterne her er dem, der falder før første spadestik.
+  // Momsen behandles som byggeriets: ikke fradragsberettiget, altså en reel omkostning.
+  var preEx = (Q.udvikOmk || 0) + (Q.konsulentOmk || 0);
+  var preMoms = preEx * 0.25;
+  var preIn = preEx + preMoms;
+
   // kontant investering + samlet kapitalindsats
-  var pI = landMode === "purchase" ? land + cIn : cIn;
+  var pI = (landMode === "purchase" ? land + cIn : cIn) + preIn;
   var totalCapital = landMode === "apport" ? pI + grundVaerdi : pI;
 
   // ── DRIFT ÅR 1 ──
@@ -611,6 +622,7 @@ export function calcModel(P, spec) {
     cf: cf, totalSalg: totalSalg, cumNoi: cumNoiEff, totalReturn: totalReturn, totalReturnPct: totalReturnPct,
     cagr: cagr, equityMultiple: equityMultiple, exitValue: exitValue, exitValueHold: exitValueHold,
     // finansiering
+    preEx: preEx, preMoms: preMoms, preIn: preIn,
     loanAmt: loanAmt, bankFeeKr: bankFeeKr, cashEquity: cashEquity, cashIndskud: cashIndskud,
     equityTotal: equityTotal, eqInvested: eqInvested, debt0: debt0, ydIO: ydIO,
     seniorAmt: seniorAmt, juniorAmt: juniorAmt, blendedRate: blendedRate,

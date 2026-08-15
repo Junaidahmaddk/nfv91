@@ -645,6 +645,14 @@ export default function App() {
             <DR label="Excl. moms" value={f(m.cEx)} bold bg={LT} />
             <DR label="Moms 25% (ikke fradrag)" value={f(m.moms)} />
             <DR label="Byggesum inkl. moms (kontant)" value={f(m.cIn)} bold bg={LT} />
+            {m.preIn > 0 && <>
+              <Hd text="KAPITALISEREDE FOR-OMKOSTNINGER (FØR BYGGESTART)" />
+              <DR label="Udvikling — projektledelse, myndighedsproces" value={f(P.udvikOmk)} />
+              <DR label="Konsulenter — arkitekt/ingeniør frem til tilladelse, landinspektør, miljø" value={f(P.konsulentOmk)} bg={LT} />
+              <DR label="Excl. moms" value={f(m.preEx)} bold />
+              <DR label="Moms 25% (ikke fradrag)" value={f(m.preMoms)} bg={LT} />
+              <DR label="For-omkostninger inkl. moms" value={f(m.preIn)} bold />
+            </>}
             <TotR left="SAMLET KAPITALINDSATS" right={f(m.totalCapital)} />
           </Crd>
           <div>
@@ -725,7 +733,7 @@ export default function App() {
         {threePhase && <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 8 }}>
           <Fase n="1" titel="Grundkøb" aar={"år 0" + (FA.gYrs > 1 ? "–" + (FA.gYrs - 1) : "")} laan={FA.grundLaan} laanTxt={P.grundLtv + " % LTV af grundkøb " + f(m.land)}
             rows={[["Egenkapital ved købet", f(FA.grundEgen)], ["Rente " + P.grundRate + " % (afdragsfrit)", f(FA.ydGrund) + "/år"], ["Renter i fasen", f(FA.grundRenter)]]} />
-          <Fase n="2" titel="Byggeri" aar={"år " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "")} laan={m.loanAmt} laanTxt={P.ltcPct + " % LTC af projektsum — indfrier grundlånet"}
+          <Fase n="2" titel="Byggeri" aar={"år " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "")} laan={m.loanAmt} laanTxt={P.ltcPct + " % LTC af projektsum" + (m.preIn > 0 ? " inkl. for-omk." : "") + " — indfrier grundlånet"}
             rows={[["Gns. træk i byggefasen", f(FA.byggeGnsnit)], ["Blended rente " + fP(m.blendedRate), f(FA.ydByg) + "/år"], ["Renter i fasen", f(FA.byggeRenter)]]} />
           <Fase n="3" titel="Stabiliseret drift" aar={"fra år " + FA.stabYear} laan={m.rkLoan} laanTxt={P.rkLtv + " % LTV af værdi " + f(m.iv4)}
             rows={[
@@ -782,6 +790,7 @@ export default function App() {
             <DR label={"Rente (" + P.grundRate + "%, afdragsfrit)"} value={f(FA.ydGrund) + "/år"} bg={LT} />
             <DR label={"Renter i fase 1 (" + FA.gYrs + " år uden leje)"} value={f(FA.grundRenter)} color={OR} />
             <Hd text={"FASE 2 — BYGGEFINANSIERING (ÅR " + FA.gYrs + (FA.byggeYrs > 1 ? "–" + (FA.stabYear - 1) : "") + ")"} />
+            {m.preIn > 0 && <DR label={"LTC-grundlag: grund + byggesum + kapitaliserede for-omk. (" + f(m.preIn) + ")"} value={f(m.pI)} />}
             <DR label={"Byggekredit (" + P.ltcPct + "% LTC af projektsum)"} value={f(m.loanAmt)} bg={LT} />
             <DR label={"   Senior-tranche (op til 65% · " + P.seniorRate + "%)"} value={f(m.seniorAmt)} />
             {m.juniorAmt > 0 && <DR label={"   Junior-tranche (" + P.juniorRate + "%)"} value={f(m.juniorAmt)} bg={LT} />}

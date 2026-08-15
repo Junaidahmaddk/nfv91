@@ -117,6 +117,10 @@
       {
         "tekst": "Tiden uden indtægt. Grundkøbs- og byggefasen løber over tre år, hvor projektet betaler ca. 4,3 mio. kr. i renter uden en krone i leje. Hvert ekstra år i den fase koster både renter og et års forskydning af hele salgsprovenuet. Det er den mest direkte kobling mellem tidsplan og afkast i casen.",
         "udkast": true
+      },
+      {
+        "tekst": "For-omkostningerne og hvad de reelt køber. Udviklings- og konsulentomkostninger frem til byggestart aktiveres i projektsummen, så banken ser dem som project cost. Det udvider LTC-grundlaget, og byggekreditten vokser med 65 % af beløbet. Gevinsten overlever dog kun refinansieringen, hvis ejendomsværdien bærer det større lån: binder refi-gap'et — som ved casens udgangsforudsætninger — vokser gap'et med præcis samme beløb, som lånet gør, og egenkapitalbehovet er uændret. Har realkreditten derimod luft, er besparelsen reel. Beløbene i modellen er skøn og skal erstattes af projektets faktiske afholdte omkostninger.",
+        "udkast": true
       }
     ]
   },
@@ -221,6 +225,10 @@
       },
       {
         "tekst": "Pref (forlodsafkast) — et afkast, investorerne kan få forlods, før udvikleren tager carry. Casen regner uden pref, så hele overskuddet indgår i carry-grundlaget; sættes der en pref, skrumper det grundlag tilsvarende.",
+        "udkast": true
+      },
+      {
+        "tekst": "Kapitaliserede omkostninger — udgifter, der bogføres som en del af projektets anlægssum i stedet for at blive udgiftsført med det samme. Her drejer det sig om udvikling og rådgivning frem til byggestart. Når de indgår i projektsummen, tæller de med i bankens »loan to cost«, og lånet kan derfor blive større.",
         "udkast": true
       }
     ]
