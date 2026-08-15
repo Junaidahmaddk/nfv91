@@ -21,10 +21,11 @@ const BASE = import.meta.env.BASE_URL; // relative asset-stier (GitHub Pages-und
 // FREDET: delt tilstand genbruger den deployede Vercel-funktion fra lgv2628 —
 // hver case adskilles via ?p=<slug> (ALDRIG ?k=bc, som er LGV's egen nøgle).
 const API_STATE = "https://lgv2628.vercel.app/api/state";
-const GRID = "rgba(232,220,196,0.1)";
-const REFL = "rgba(232,220,196,0.3)";
+const GRID = "var(--ink-1)";
+const REFL = "var(--ink-3)";
 // de forudsætninger, casen er mest følsom over for — vises som calculator på memo-fanen
 const MEMO_SLIDERS = ["pp", "csqm", "spSqm", "rent"];
+const THEME_KEY = spec.slug + "-tema";
 
 // ── delt lagring: /api/state (Vercel Blob) med localStorage som fallback ──
 async function remoteGet() {
@@ -58,9 +59,9 @@ function fmtFn(key) { return FMT[key] || f; }
 // kort formåls-/beskrivelsesboks øverst på hvert faneblad
 function TabIntro(props) {
   return (
-    <div style={{ background: "rgba(43,59,54,0.4)", border: "1px solid rgba(232,220,196,0.15)", borderLeft: "3px solid #D4C5A9", borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
-      <div style={{ fontSize: 9, letterSpacing: 2, color: "rgba(232,220,196,0.45)", marginBottom: 4 }}>FORMÅL</div>
-      <div style={{ fontSize: 12.5, color: "rgba(232,220,196,0.8)", lineHeight: 1.6 }}>{props.children}</div>
+    <div style={{ background: "rgba(var(--card-rgb),0.4)", border: "1px solid var(--ink-15)", borderLeft: "3px solid var(--gold)", borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}>
+      <div style={{ fontSize: 9, letterSpacing: 2, color: "var(--ink-45)", marginBottom: 4 }}>FORMÅL</div>
+      <div style={{ fontSize: 12.5, color: "var(--ink-8)", lineHeight: 1.6 }}>{props.children}</div>
     </div>
   );
 }
@@ -68,7 +69,7 @@ function TabIntro(props) {
 // guld-pill på alle prosa-afsnit med udkast:true — fjernes KUN efter menneskelig godkendelse (se POLISH.md)
 function UdkastBadge() {
   return (
-    <span style={{ display: "inline-block", background: "rgba(212,197,169,0.12)", border: "1px solid " + GD, color: GD, borderRadius: 9999, fontSize: 9, letterSpacing: 1.5, fontWeight: 700, padding: "2px 10px", marginLeft: 8, verticalAlign: "middle", whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-block", background: "rgba(var(--gold-rgb),0.12)", border: "1px solid " + GD, color: GD, borderRadius: 9999, fontSize: 9, letterSpacing: 1.5, fontWeight: 700, padding: "2px 10px", marginLeft: 8, verticalAlign: "middle", whiteSpace: "nowrap" }}>
       UDKAST — IKKE GENNEMGÅET
     </span>
   );
@@ -79,7 +80,7 @@ function ProsaSec({ sektion, sub }) {
   if (!sektion || !sektion.afsnit || !sektion.afsnit.length) return null;
   return (
     <Sec title={sektion.titel} sub={sub}>
-      <div style={{ fontSize: 13, lineHeight: 1.75, color: "rgba(232,220,196,0.85)", maxWidth: 830 }}>
+      <div style={{ fontSize: 13, lineHeight: 1.75, color: "var(--ink-85)", maxWidth: 830 }}>
         {sektion.afsnit.map(function(a, i) {
           return (
             <p key={i} style={{ margin: i < sektion.afsnit.length - 1 ? "0 0 10px" : 0 }}>
@@ -96,8 +97,8 @@ function ProsaSec({ sektion, sub }) {
 // ét fase-kort på finansieringsfanen: hvilken gæld bærer projektet hvornår
 function Fase({ n, titel, aar, laan, laanTxt, rows, advar }) {
   return (
-    <div style={{ background: CD, borderRadius: 8, overflow: "hidden", border: "1px solid " + (advar ? "rgba(245,158,11,0.45)" : CB) }}>
-      <div style={{ background: advar ? "rgba(245,158,11,0.15)" : "rgba(232,220,196,0.12)", padding: "7px 12px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+    <div style={{ background: CD, borderRadius: 8, overflow: "hidden", border: "1px solid " + (advar ? "rgba(var(--or-rgb),0.45)" : CB) }}>
+      <div style={{ background: advar ? "rgba(var(--or-rgb),0.15)" : "var(--ink-12)", padding: "7px 12px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <span style={{ fontSize: 11.5, fontWeight: 700, color: BL }}>FASE {n} · {titel}</span>
         <span style={{ fontSize: 10, color: GY }}>{aar}</span>
       </div>
@@ -126,7 +127,7 @@ function Myndighed({ P, m }) {
     var r = calcModel(Object.assign({}, P, { bebygPct: sc.bebygPct, units: units }), spec);
     return { sc: sc, area: r.AREA, units: units, r: r, aktiv: sc.bebygPct === P.bebygPct };
   });
-  var th = { background: "rgba(232,220,196,0.12)", padding: "7px 8px", whiteSpace: "nowrap" };
+  var th = { background: "var(--ink-12)", padding: "7px 8px", whiteSpace: "nowrap" };
   return (
     <Sec title="Myndighedsscenarier" sub="Samme case regnet igennem, hvis kommunen lander et andet sted på udnyttelsen">
       <div style={{ overflowX: "auto" }}>
@@ -142,7 +143,7 @@ function Myndighed({ P, m }) {
           </tr></thead>
           <tbody>
             {rows.map(function(row, i) {
-              var td = { padding: "6px 8px", textAlign: "right", background: row.aktiv ? "rgba(245,158,11,0.15)" : i % 2 ? LT : "transparent", fontWeight: row.aktiv ? 700 : 400, fontVariantNumeric: "tabular-nums" };
+              var td = { padding: "6px 8px", textAlign: "right", background: row.aktiv ? "rgba(var(--or-rgb),0.15)" : i % 2 ? LT : "transparent", fontWeight: row.aktiv ? 700 : 400, fontVariantNumeric: "tabular-nums" };
               return <tr key={i}>
                 <td style={Object.assign({}, td, { textAlign: "left" })}>
                   {row.sc.navn}{row.aktiv ? " •" : ""}
@@ -269,6 +270,24 @@ export default function App() {
   var capMode = m.exitMode === "cap";
   var holdMode = m.exitMode === "hold";
   var purchase = m.landMode === "purchase";
+  // tema: husket valg vinder, ellers følger vi systemets indstilling
+  var _tema = useState(function() {
+    try { var g = localStorage.getItem(THEME_KEY); if (g === "light" || g === "dark") return g; } catch (e) {}
+    return (typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  });
+  var tema = _tema[0], setTema = _tema[1];
+  useEffect(function() {
+    document.documentElement.setAttribute("data-theme", tema);
+    try { localStorage.setItem(THEME_KEY, tema); } catch (e) {}
+  }, [tema]);
+  // følg systemet, så længe brugeren ikke selv har valgt
+  useEffect(function() {
+    if (typeof matchMedia !== "function") return;
+    var mq = matchMedia("(prefers-color-scheme: light)");
+    var h = function(e) { try { if (!localStorage.getItem(THEME_KEY)) setTema(e.matches ? "light" : "dark"); } catch (_) {} };
+    if (mq.addEventListener) { mq.addEventListener("change", h); return function() { mq.removeEventListener("change", h); }; }
+  }, []);
+
   var twoPhase = m.debtMode === "twoPhase";
   var threePhase = m.debtMode === "threePhase";
   var FA = m.faser || {};
@@ -330,11 +349,11 @@ export default function App() {
   var eqMC = thc(m.eqMultLev, th.eqMult);
   var levOn = m.loanAmt > 0;
 
-  var tipStyle = { background: "#16302f", border: "1px solid rgba(232,220,196,0.25)", borderRadius: 6, fontSize: 11 };
+  var tipStyle = { background: "var(--bg-alt)", border: "1px solid var(--ink-25)", borderRadius: 6, fontSize: 11 };
   var tipItem = { color: BL };
   var cTip = function(p) {
     if (!p.active || !p.payload) return null;
-    return React.createElement("div", { style: { background: "#16302f", border: "1px solid rgba(232,220,196,0.25)", borderRadius: 6, padding: 8, fontSize: 11, color: BL } },
+    return React.createElement("div", { style: { background: "var(--bg-alt)", border: "1px solid var(--ink-25)", borderRadius: 6, padding: 8, fontSize: 11, color: BL } },
       React.createElement("div", { style: { fontWeight: 700, marginBottom: 4 } }, "År " + p.label),
       p.payload.map(function(x, i) { return React.createElement("div", { key: i, style: { color: x.color || BL } }, x.name + ": " + f(x.value)); })
     );
@@ -355,11 +374,11 @@ export default function App() {
   // segmenteret vælger til exit-beregningsmetode (kun aktiverede modes fra spec)
   var EXIT_LABELS = { sqm: "Stykvis salg (kr/m² pr. bolig)", cap: "Samlet salg (cap rate)", hold: "Drift (behold — urealiseret)" };
   var ExitModeSwitch = exitModes.length > 1 ? (
-    <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.08)", borderRadius: 9999, padding: 4, width: "fit-content", marginBottom: 14 }}>
+    <div style={{ display: "flex", gap: 4, background: "var(--ink-08)", borderRadius: 9999, padding: 4, width: "fit-content", marginBottom: 14 }}>
       {exitModes.map(function(id) {
         var on = m.exitMode === id;
         return <button key={id} onClick={function() { setParam("exitMode", id); }}
-          style={{ padding: "8px 16px", fontSize: 12, fontWeight: on ? 700 : 500, background: on ? TL : "transparent", color: on ? BL : "rgba(232,220,196,0.7)", border: "none", cursor: "pointer", whiteSpace: "nowrap", borderRadius: 9999, transition: "all 0.2s" }}>
+          style={{ padding: "8px 16px", fontSize: 12, fontWeight: on ? 700 : 500, background: on ? TL : "transparent", color: on ? BL : "var(--ink-7)", border: "none", cursor: "pointer", whiteSpace: "nowrap", borderRadius: 9999, transition: "all 0.2s" }}>
           {EXIT_LABELS[id] || id}
         </button>;
       })}
@@ -368,61 +387,67 @@ export default function App() {
 
   // ── login-gate (kun hvis spec.adgangskode er sat) ──
   if (!authed) return (
-    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", minHeight: "100vh", background: "#0F2626", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, position: "relative", overflow: "hidden" }}>
+    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, position: "relative", overflow: "hidden" }}>
       <img src={BASE + "hero.png"} alt="" aria-hidden="true"
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3, filter: "blur(3px)", transform: "scale(1.04)" }}
         onError={function(e) { e.currentTarget.style.display = "none"; }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(15,38,38,0.72) 0%, rgba(15,38,38,0.94) 100%)" }} />
-      <div style={{ position: "relative", background: "rgba(22,48,47,0.94)", border: "1px solid " + CB, borderRadius: 18, padding: "44px 40px 34px", maxWidth: 430, width: "100%", textAlign: "center", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}>
-        <div style={{ fontSize: 9, letterSpacing: 3, color: "rgba(232,220,196,0.45)", marginBottom: 10 }}>FAIRHOMES · BUSINESS CASE</div>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(var(--bg-rgb),0.72) 0%, rgba(var(--bg-rgb),0.94) 100%)" }} />
+      <div style={{ position: "relative", background: "var(--bg-alt)", border: "1px solid " + CB, borderRadius: 18, padding: "44px 40px 34px", maxWidth: 430, width: "100%", textAlign: "center", boxShadow: "0 24px 60px var(--shadow)" }}>
+        <div style={{ fontSize: 9, letterSpacing: 3, color: "var(--ink-45)", marginBottom: 10 }}>FAIRHOMES · BUSINESS CASE</div>
         <h1 style={{ margin: "0 0 4px", fontSize: 27, fontFamily: "'Playfair Display',Georgia,serif", color: BL }}>{spec.kortTitel}</h1>
-        <div style={{ fontSize: 12.5, color: "rgba(232,220,196,0.6)", marginBottom: 22 }}>{spec.adresse} · {spec.postnrBy}</div>
-        <div style={{ height: 1, background: "rgba(232,220,196,0.15)", margin: "0 auto 22px", width: 60 }} />
-        <div style={{ fontSize: 12, color: "rgba(232,220,196,0.7)", marginBottom: 14 }}>Indtast adgangskode for at åbne investeringsværktøjet</div>
+        <div style={{ fontSize: 12.5, color: "var(--ink-6)", marginBottom: 22 }}>{spec.adresse} · {spec.postnrBy}</div>
+        <div style={{ height: 1, background: "var(--ink-15)", margin: "0 auto 22px", width: 60 }} />
+        <div style={{ fontSize: 12, color: "var(--ink-7)", marginBottom: 14 }}>Indtast adgangskode for at åbne investeringsværktøjet</div>
         <input type="password" value={kode} autoFocus placeholder="Adgangskode"
           onChange={function(e) { setKode(e.target.value); setKodeFejl(false); }}
           onKeyDown={function(e) { if (e.key === "Enter") provKode(); }}
-          style={{ width: "100%", boxSizing: "border-box", background: "rgba(15,38,38,0.85)", border: "1px solid " + (kodeFejl ? RD : CB), borderRadius: 10, padding: "13px 14px", color: BL, fontSize: 15, textAlign: "center", letterSpacing: 4, outline: "none", marginBottom: 10 }} />
+          style={{ width: "100%", boxSizing: "border-box", background: "rgba(var(--bg-rgb),0.85)", border: "1px solid " + (kodeFejl ? RD : CB), borderRadius: 10, padding: "13px 14px", color: BL, fontSize: 15, textAlign: "center", letterSpacing: 4, outline: "none", marginBottom: 10 }} />
         {kodeFejl && <div style={{ fontSize: 11, color: RD, marginBottom: 10, fontWeight: 600 }}>Forkert kode — prøv igen</div>}
         <button onClick={provKode}
           style={{ width: "100%", background: TL, color: BL, border: "1px solid " + TL, borderRadius: 10, padding: "13px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: 0.5 }}>
           Åbn dashboard →
         </button>
-        <div style={{ fontSize: 9.5, color: "rgba(232,220,196,0.35)", marginTop: 22, letterSpacing: 0.5 }}>Fortroligt materiale · Fairhomes</div>
+        <div style={{ fontSize: 9.5, color: "var(--ink-35)", marginTop: 22, letterSpacing: 0.5 }}>Fortroligt materiale · Fairhomes</div>
       </div>
     </div>
   );
 
   if (!loaded) return (
-    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", maxWidth: 960, margin: "0 auto", padding: "60px 14px", textAlign: "center", color: GY, background: "#0F2626", minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", maxWidth: 960, margin: "0 auto", padding: "60px 14px", textAlign: "center", color: GY, background: "var(--bg)", minHeight: "100vh" }}>
       <div style={{ fontSize: 14 }}>Indlæser gemt tilstand...</div>
     </div>
   );
 
   return (
-    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", maxWidth: 960, margin: "0 auto", padding: "18px 16px 60px", color: BL, background: "#0F2626", minHeight: "100vh" }}>
+    <div style={{ fontFamily: "'Inter',system-ui,-apple-system,sans-serif", maxWidth: 960, margin: "0 auto", padding: "18px 16px 60px", color: BL, background: "var(--bg)", minHeight: "100vh" }}>
       {/* header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10, marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: "rgba(232,220,196,0.4)", marginBottom: 2 }}>FAIRHOMES · BUSINESS CASE</div>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: "var(--ink-4)", marginBottom: 2 }}>FAIRHOMES · BUSINESS CASE</div>
           <h1 style={{ margin: 0, fontSize: 26, fontFamily: "'Playfair Display',Georgia,serif", color: BL }}>{spec.titel}</h1>
-          <div style={{ fontSize: 12, color: "rgba(232,220,196,0.55)" }}>{spec.postnrBy} · {spec.produkt} · Grund {fK(P.grundAreal)} m²</div>
-          <div style={{ fontSize: 11, color: "rgba(232,220,196,0.4)", marginTop: 3, fontStyle: "italic" }}>{spec.tagline}</div>
+          <div style={{ fontSize: 12, color: "var(--ink-55)" }}>{spec.postnrBy} · {spec.produkt} · Grund {fK(P.grundAreal)} m²</div>
+          <div style={{ fontSize: 11, color: "var(--ink-4)", marginTop: 3, fontStyle: "italic" }}>{spec.tagline}</div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: status === "gemt" ? GR : dirty ? OR : "rgba(232,220,196,0.4)", minWidth: 78, textAlign: "right", transition: "color .2s" }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: status === "gemt" ? GR : dirty ? OR : "var(--ink-4)", minWidth: 78, textAlign: "right", transition: "color .2s" }}>
             {status === "gemt" ? "✓ Gemt" : dirty ? "● Ikke gemt" : "Alt gemt"}
           </span>
           <button onClick={gem} disabled={!dirty}
             title="Gem de aktuelle forudsætninger, så de er der næste gang (deles på tværs af enheder). Genvej: Cmd/Ctrl+S"
-            style={{ background: dirty ? TL : "rgba(54,120,120,0.3)", color: BL, border: "1px solid " + (dirty ? TL : CB), borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: dirty ? "pointer" : "default", opacity: dirty ? 1 : 0.6 }}>
+            style={{ background: dirty ? TL : "rgba(var(--teal-rgb),0.3)", color: BL, border: "1px solid " + (dirty ? TL : CB), borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: dirty ? "pointer" : "default", opacity: dirty ? 1 : 0.6 }}>
             💾 Gem
+          </button>
+          <button onClick={function() { setTema(tema === "dark" ? "light" : "dark"); }}
+            title={tema === "dark" ? "Skift til lyst tema" : "Skift til mørkt tema"}
+            aria-label={tema === "dark" ? "Skift til lyst tema" : "Skift til mørkt tema"}
+            style={{ fontSize: 13, color: "var(--ink-7)", background: "transparent", border: "1px solid " + CB, borderRadius: 8, padding: "8px 12px", cursor: "pointer", fontWeight: 600, lineHeight: 1 }}>
+            {tema === "dark" ? "☀" : "☾"}
           </button>
           <button onClick={function() {
             if (dirty && !confirm("Nulstil alle forudsætninger til standard? Ikke-gemte ændringer går tabt. (Tryk Gem bagefter for at gøre det permanent.)")) return;
             applyData(null);
             setStatus("");
-          }} style={{ fontSize: 11, color: "rgba(232,220,196,0.7)", background: "transparent", border: "1px solid " + CB, borderRadius: 8, padding: "8px 14px", cursor: "pointer", fontWeight: 600 }}>
+          }} style={{ fontSize: 11, color: "var(--ink-7)", background: "transparent", border: "1px solid " + CB, borderRadius: 8, padding: "8px 14px", cursor: "pointer", fontWeight: 600 }}>
             ↺ Nulstil
           </button>
         </div>
@@ -433,8 +458,8 @@ export default function App() {
         <img src={BASE + "hero.png"} alt={"Visualisering — " + spec.titel}
           style={{ width: "100%", height: 300, objectFit: "cover", display: "block" }}
           onError={function(e) { e.currentTarget.parentElement.style.display = "none"; }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(15,38,38,0) 55%, rgba(15,38,38,0.6) 100%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", left: 14, bottom: 10, fontSize: 10, color: "rgba(232,220,196,0.75)", letterSpacing: 1.5 }}>VISUALISERING — UDKAST</div>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(var(--bg-rgb),0) 55%, rgba(var(--bg-rgb),0.6) 100%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", left: 14, bottom: 10, fontSize: 10, color: "var(--ink-75)", letterSpacing: 1.5 }}>VISUALISERING — UDKAST</div>
       </div>
 
       <TabBar tabs={tabs} active={tab} onChange={setTab} />
@@ -446,7 +471,7 @@ export default function App() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 24 }}>
           <Kp label={purchase ? "Samlet investering" : "Byggeriet koster"} value={f(m.pI)} sub={purchase ? "grundkøb + byggeri, alt inkl." : "alt inklusive (kontant behov)"} />
           <Kp label={purchase ? "Heraf grundkøb" : "Grundens værdi"} value={f(purchase ? m.land : m.grundVaerdi)} sub={purchase ? "inkl. tinglysning og advokat/DD" : "ejes allerede — apportindskud"} />
-          <Kp label="Lån" value={f(m.loanAmt)} sub={twoPhase ? "byggelån (LTC) → realkredit" : "realkredit — afdragsfrit"} />
+          <Kp label="Lån" value={f(m.loanAmt)} sub={threePhase ? "grundkøbslån → byggekredit → realkredit" : twoPhase ? "byggelån (LTC) → realkredit" : "realkredit — afdragsfrit"} />
           <Kp label="Forventet gevinst" value={f(m.totalRetLev)} sub={"over ca. " + tyrs + " år — efter renter"} color={retLC} />
         </div>
 
@@ -505,7 +530,7 @@ export default function App() {
           <Kp label={"Implied værdi (" + P.capRate + "% cap)"} value={f(m.iv4)} sub={(m.residualValue >= 0 ? "+" : "") + f(m.residualValue) + " vs kapital"} color={ivC} />
           <Kp label="Profit pr. bolig" value={f(m.totalRetLev / units)} sub={f(m.totalRetLev / AREA) + "/m² — efter renter"} color={retLC} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20, padding: 8, background: levOn ? "rgba(245,158,11,0.08)" : "transparent", borderRadius: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20, padding: 8, background: levOn ? "rgba(var(--or-rgb),0.08)" : "transparent", borderRadius: 8 }}>
           <Kp label="Ulev. CAGR (før finansiering)" value={fP(m.cagr)} sub={"på samlet kapital " + f(m.totalCapital)} color={cagrC} />
           <Kp label="Cash-on-Cash" value={levOn ? fP(m.cocReturn) : "—"} sub={levOn ? "NOI eft. rente / EK" : ""} color={levOn ? cocC : GY} />
           <Kp label="DSCR" value={levOn ? m.dscr.toFixed(2) + "x" : "—"} sub={levOn ? (m.dscr >= 1.3 ? "Solid" : m.dscr >= 1.0 ? "Marginal" : "Under 1x") : ""} color={levOn ? dscrC : GY} />
@@ -707,7 +732,7 @@ export default function App() {
             </div>}
           </Crd>
           <div>
-            <div style={{ background: "rgba(54,120,120,0.18)", border: "1px solid rgba(54,120,120,0.45)", borderRadius: 8, padding: "10px 14px", fontSize: 11.5, color: "rgba(232,220,196,0.85)", lineHeight: 1.6, marginBottom: 16 }}>
+            <div style={{ background: "rgba(var(--teal-rgb),0.18)", border: "1px solid rgba(var(--teal-rgb),0.45)", borderRadius: 8, padding: "10px 14px", fontSize: 11.5, color: "var(--ink-85)", lineHeight: 1.6, marginBottom: 16 }}>
               {itemised
                 ? <><b>Driftsomkostninger:</b> Specificeret post for post (grundskyld, forsikring, administration, vedligehold, diverse). Posterne holdes flade i cashflow-fremskrivningen og skaleres med den tilbageværende portefølje.</>
                 : <><b>Driftsomkostninger:</b> Sat samlet til {fK(P.driftSqm)} kr/m²/år — alt inkl.: ejendomsskat, forsikring, administration, vedligehold og hensættelser. Driften prisreguleres med {P.lejeStig}% p.a. ligesom lejen, så NOI-marginen holdes konstant frem mod exit.</>}
@@ -901,7 +926,7 @@ export default function App() {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: BL }}>
               <thead><tr>
                 {["År", "Driftsresultat eft. renter", "Salg (netto)", "Kum. profit", "Boliger ift."].map(function(h, i) {
-                  return <th key={i} style={{ background: "rgba(232,220,196,0.12)", padding: "6px 8px", textAlign: i === 0 ? "left" : "right" }}>{h}</th>;
+                  return <th key={i} style={{ background: "var(--ink-12)", padding: "6px 8px", textAlign: i === 0 ? "left" : "right" }}>{h}</th>;
                 })}
               </tr></thead>
               <tbody>
@@ -939,16 +964,16 @@ export default function App() {
             <DR label="   = Inkl. moms" value={f(F.mgmtInkl)} bold bg={LT} />
             <TotR left="Management fee inkl. moms" right={f(F.mgmtInkl)} />
             <div style={{ height: 8 }} />
-            <Hd text={"WATERFALL VED EXIT — EJEREN FØRST I KØEN (" + P.prefPct + "% FORLODS)"} bg="rgba(34,197,94,0.25)" />
+            <Hd text={"WATERFALL VED EXIT — EJEREN FØRST I KØEN (" + P.prefPct + "% FORLODS)"} bg="rgba(var(--gr-rgb),0.25)" />
             <DR label="Nettoprovenu ved exit (total return, før finansiering)" value={f(m.totalReturn)} />
             <DR label={"1. prioritet — ejer: forlodsafkast " + P.prefPct + "% af " + f(F.prefBase)} value={f(F.wfTier1)} bold bg={LT} />
             <DR label={"2. prioritet — Fairhomes profit share: " + P.carryPct + "% af gevinsten UD OVER forlodsafkastet (" + f(F.wfRest) + ")"} value={f(F.carry)} />
             <DR label={"3. prioritet — ejer: resten (" + (100 - P.carryPct) + "% af " + f(F.wfRest) + ")"} value={f(F.ejerRest)} bg={LT} />
             <TotR left="Ejer — profit i alt (forlods + rest)" right={f(F.ejerProfit)} />
-            <TotR left="Fairhomes i alt (mgmt fee + profit share)" right={f(F.totalFees)} bg="rgba(212,197,169,0.25)" />
+            <TotR left="Fairhomes i alt (mgmt fee + profit share)" right={f(F.totalFees)} bg="rgba(var(--gold-rgb),0.25)" />
           </Crd>
         </Sec>
-        <div style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "#E8C989", lineHeight: 1.7 }}>
+        <div style={{ background: "rgba(var(--or-rgb),0.08)", border: "1px solid rgba(var(--or-rgb),0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "var(--amber-text)", lineHeight: 1.7 }}>
           <b>Fee-struktur:</b> Fast management fee på {P.mgmtPct}% af projektsummen + moms, faktureret månedligt over projektperioden på {P.projMdr} mdr. Ved exit fordeles gevinsten i en waterfall, hvor ejeren først får forlodsafkastet — giver projektet mindre end pref'en, får Fairhomes intet profit share. Struktur og satser aftales konkret pr. projekt.
         </div>
       </>;
@@ -978,7 +1003,7 @@ export default function App() {
             <DR label="Pr. måned (inkl. moms)" value={fK(Math.round(F.devMdrInkl)) + " DKK"} bg={LT} />
             {F.finFee > 0 && <DR label={"Finansierings-fee (" + P.finFeePct + " % af lånesum, momsfri)"} value={f(F.finFee)} />}
             <div style={{ height: 8 }} />
-            <Hd text={"WATERFALL VED EXIT — EJERNE FÅR KAPITALEN TILBAGE FØRST"} bg="rgba(34,197,94,0.25)" />
+            <Hd text={"WATERFALL VED EXIT — EJERNE FÅR KAPITALEN TILBAGE FØRST"} bg="rgba(var(--gr-rgb),0.25)" />
             <DR label="Provenu til egenkapitalen (efter renter og efter tilbagebetalt kapital)" value={f(F.bruttoprovenu)} />
             <DR label="   − Fairhomes' honorarer (projektomkostning)" value={"−" + f(F.devInkl + F.finFee)} bg={LT} />
             <DR label="   = Nettoprovenu til fordeling" value={f(F.nettoprovenu)} bold />
@@ -986,7 +1011,7 @@ export default function App() {
             <DR label={"Fairhomes carry — " + P.carryPct + " % af " + f(F.carryBase)} value={f(F.carry)} bg={P.prefPct > 0 ? undefined : LT} />
             <DR label={"Ejerne — resten (" + (100 - P.carryPct) + " % af " + f(F.carryBase) + ")"} value={f(F.carryBase - F.carry)} />
             <TotR left="Ejerne — profit i alt" right={f(F.ejerProfit)} bg={GR} />
-            <TotR left="Fairhomes i alt (fee + carry)" right={f(F.jwgIalt)} bg="rgba(212,197,169,0.25)" />
+            <TotR left="Fairhomes i alt (fee + carry)" right={f(F.jwgIalt)} bg="rgba(var(--gold-rgb),0.25)" />
           </Crd>
         </Sec>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 12, marginBottom: 12 }}>
@@ -1027,17 +1052,17 @@ export default function App() {
             <Hd text="FINANSIERINGS-FEE" />
             <DR label={"Fee (" + P.finFeePct + "% af lånesum " + f(m.loanAmt) + ", momsfri)"} value={f(F.finFee)} />
             <DR label="   Pr. måned" value={fK(Math.round(F.finMdr)) + " DKK/mdr"} bg={LT} />
-            <TotR left="TOTAL FEES" right={f(F.totalFees)} bg="rgba(212,197,169,0.25)" />
+            <TotR left="TOTAL FEES" right={f(F.totalFees)} bg="rgba(var(--gold-rgb),0.25)" />
           </Crd>
         </Sec>
-        <div style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "#E8C989", lineHeight: 1.7 }}>
+        <div style={{ background: "rgba(var(--or-rgb),0.08)", border: "1px solid rgba(var(--or-rgb),0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "var(--amber-text)", lineHeight: 1.7 }}>
           <b>Development Fee:</b> {P.devPctYr}% p.a. + 25% moms af projektsum — dækker projektledelse, byggestyring, udlejningskoordinering og løbende asset management. <b>Finansierings-fee:</b> {P.finFeePct}% af lånesum (momsfri) — dækker låneformidling, kreditforhandling og dokumentation. Begge faktureres månedligt over {P.projMdr} mdr. Struktur og satser aftales konkret pr. projekt.
         </div>
       </>;
       })()}
 
       {tab === "sens" && (function() {
-        var selStyle = { background: "#16302f", color: BL, border: "1px solid " + CB, borderRadius: 8, padding: "8px 10px", fontSize: 12, fontWeight: 600 };
+        var selStyle = { background: "var(--bg-alt)", color: BL, border: "1px solid " + CB, borderRadius: 8, padding: "8px 10px", fontSize: 12, fontWeight: 600 };
         var selLabel = { fontSize: 10, color: GY, marginBottom: 3, fontWeight: 600 };
         return <>
         <TabIntro>Stresstest af casen: Vælg to parametre og et nøgletal, og se hvor robust projektet er, når forudsætningerne skrider — fx højere byggepriser, lavere salgspriser eller stigende rente.</TabIntro>
@@ -1062,16 +1087,16 @@ export default function App() {
               </select>
             </div>
           </div>
-          {!sens && <div style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "#E8C989" }}>
+          {!sens && <div style={{ background: "rgba(var(--or-rgb),0.08)", border: "1px solid rgba(var(--or-rgb),0.25)", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "var(--amber-text)" }}>
             {sensX === sensY ? "Vælg to forskellige parametre til akserne." : "Cap rate og salgspris kan ikke krydses — de er to konkurrerende exit-metoder. Vælg en anden kombination."}
           </div>}
           {sens && <>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: BL }}>
               <thead><tr>
-                <th style={{ background: "rgba(232,220,196,0.12)", padding: "7px 8px", textAlign: "left", whiteSpace: "nowrap" }}>{sens.yP.label + " \\ " + sens.xP.label}</th>
+                <th style={{ background: "var(--ink-12)", padding: "7px 8px", textAlign: "left", whiteSpace: "nowrap" }}>{sens.yP.label + " \\ " + sens.xP.label}</th>
                 {sens.xVals.map(function(xv, i) {
-                  return <th key={i} style={{ background: "rgba(232,220,196,0.12)", padding: "7px 5px", textAlign: "right", fontWeight: xv === sens.xCur ? 800 : 600 }}>{fmtFn(sens.xP.fmt)(xv)}{xv === sens.xCur ? " •" : ""}</th>;
+                  return <th key={i} style={{ background: "var(--ink-12)", padding: "7px 5px", textAlign: "right", fontWeight: xv === sens.xCur ? 800 : 600 }}>{fmtFn(sens.xP.fmt)(xv)}{xv === sens.xCur ? " •" : ""}</th>;
                 })}
               </tr></thead>
               <tbody>
@@ -1082,7 +1107,7 @@ export default function App() {
                       var v = c.value;
                       var cl = v >= sens.met.good ? GR : v >= sens.met.ok ? BL : RD;
                       var isB = c.xVal === sens.xCur && row.yVal === sens.yCur;
-                      return <td key={si} style={{ padding: "6px 5px", textAlign: "right", background: isB ? "rgba(245,158,11,0.15)" : ri % 2 ? LT : "transparent", color: cl, fontWeight: isB ? 700 : 400, border: isB ? "2px solid " + GD : "none", fontVariantNumeric: "tabular-nums" }}>
+                      return <td key={si} style={{ padding: "6px 5px", textAlign: "right", background: isB ? "rgba(var(--or-rgb),0.15)" : ri % 2 ? LT : "transparent", color: cl, fontWeight: isB ? 700 : 400, border: isB ? "2px solid " + GD : "none", fontVariantNumeric: "tabular-nums" }}>
                         {fmtFn(sens.met.fmt)(v)}
                       </td>;
                     })}
@@ -1102,7 +1127,7 @@ export default function App() {
       {/* Forbehold — vises på ALLE faner */}
       <ProsaSec sektion={prosa.forbehold} />
 
-      <div style={{ marginTop: 40, paddingTop: 12, borderTop: "1px solid " + CB, fontSize: 9.5, color: "rgba(232,220,196,0.35)", lineHeight: 1.6, textAlign: "center" }}>
+      <div style={{ marginTop: 40, paddingTop: 12, borderTop: "1px solid " + CB, fontSize: 9.5, color: "var(--ink-35)", lineHeight: 1.6, textAlign: "center" }}>
         Fairhomes — {spec.kortTitel} — {spec.dato} · Alle beregninger er vejledende og udgør ikke investeringsrådgivning. Tryk <b>Gem</b> (eller Cmd/Ctrl+S) for at gemme forudsætningerne — de deles på tværs af enheder og hentes frem næste gang.
       </div>
     </div>
